@@ -1,0 +1,22 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "lost & found backend ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/M45Hasan/Lost-Found.git"
+  },
+  "keywords": [
+    "batch52"
+  ],
+  "author": "Hasan and Salahuddin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/M45Hasan/Lost-Found/issues"
+  },
+  "homepage": "https://github.com/M45Hasan/Lost-Found#readme"
+}
