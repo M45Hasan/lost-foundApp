@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/M45Hasan/Lost-Found.git"
+    "url": "git+https://github.com/M45Hasan/lost-foundApp.git"
   },
   "keywords": [
     "batch52"
@@ -16,7 +16,7 @@
   "author": "Hasan and Salahuddin",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/M45Hasan/Lost-Found/issues"
+    "url": "https://github.com/M45Hasan/lost-foundApp/issues"
   },
-  "homepage": "https://github.com/M45Hasan/Lost-Found#readme"
+  "homepage": "https://github.com/M45Hasan/lost-foundApp#readme"
 }
