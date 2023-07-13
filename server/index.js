@@ -9,8 +9,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.listen(6000, () => {
+app.listen(5000, () => {
   console.log("Port runnung");
 });
 dbConnect();
-//app.use(route);
+
+app.use(route);

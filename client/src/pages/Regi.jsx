@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 export const Regi = () => {
   const [isChecked, setIsChecked] = useState(false);
@@ -66,7 +67,7 @@ export const Regi = () => {
   };
   // ############################### handle Submit function start #####
 
-  let handelSubmit = (e) => {
+  let handelSubmit = async (e) => {
     e.preventDefault();
     let regex =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -80,16 +81,18 @@ export const Regi = () => {
       setError({ ...errorData, pass: "Enter valid Password" });
     } else {
       if (isChecked) {
-        console.log(data.name, data.email, data.pass,);
-        data.name = "";
-        data.email = "";
-        data.pass = "";
-        isChecked(false);
+        await axios.post("http://localhost:5000/lostFound/regi", {
+          name: data.name,
+          email: data.email,
+          pass: data.pass,
+        }).catch((err)=>{
+          console.log(err)
+        })
+       // data.name = "", data.email = "", data.pass = "", isChecked(false);
       } else {
         setError({ ...errorData, check: "Click here" });
       }
     }
-    
   };
   // ############################### handle Submit function end #####
   // ############################### handle Icon start #####
