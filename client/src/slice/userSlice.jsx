@@ -15,6 +15,7 @@ export const userSlice = createSlice({
       // immutable state based off those changes
       state.userInfo = action.payload;
     },
+    logout:(state)=>{state.user=null}
   },
 });
 

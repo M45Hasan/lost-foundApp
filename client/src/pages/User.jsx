@@ -1,7 +1,33 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
+import { activeUser } from "../slice/UserSlice";
+import { useSelector, useDispatch } from "react-redux";
 
 const User = () => {
+  let [hide, setHide] = useState(true);
+  let navigate = useNavigate();
+  let dispatch = useDispatch();
+  let reduxReturnData = useSelector((state) => state);
+  const { userAgent, platform, vendor, product } = navigator
+  console.log('User Agent:', userAgent);
+  console.log('Platform:', platform);
+  console.log('Vendor:', vendor);
+  console.log('Product:', product);
+
+  //##### Page Navigate Start ####
+
+  useEffect(() => {
+    if (reduxReturnData.userStoreData.userInfo == null) {
+     
+
+      navigate("/login");
+    }
+  }, []);
+
+
+  //##### Page Navigate End ####
+
   return (
     <div className="w-full ">
       <Navbar xox={false} />
@@ -11,18 +37,21 @@ const User = () => {
           <div className="flex flex-col items-center pt-10 relative ">
             <div className="   ">
               <img
-               // className="w-24 h-24 mb-3 rounded-full  shadow-2xl cursor-pointer "
+                // className="w-24 h-24 mb-3 rounded-full  shadow-2xl cursor-pointer "
                 className="flex-shrink-0 object-cover border-[2px] border-gray-600 object-center btn- flex w-16 h-16 mr-auto mb-3 ml-auto rounded-full shadow-xl"
                 src="react.svg"
                 alt="Bonnie image"
               />
             </div>
-            <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
-              Bonnie Greenn
-            </h5>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              name@gmail.com
-            </span>
+              
+                <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
+                  {reduxReturnData.userStoreData.userInfo.displayName}
+                </h5>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  {reduxReturnData.userStoreData.userInfo.email}
+                </span>
+              
+          
             <svg
               className="h-6 w-6 text-red-500 absolute top-[70px] left-2 cursor-pointer "
               viewBox="0 0 24 24"

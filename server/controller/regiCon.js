@@ -21,18 +21,22 @@ const loginController = async (req, res) => {
 
   const how = await Userinfo.find({ email });
   if (how.length != 0) {
-    console.log(how[0].pass,how[0].name)
+    console.log(how[0].pass, how[0].name);
     bcrypt.compare(pass, how[0].pass, function (err, result) {
       if (result == true) {
-        res.send(
-          "Login Success"
-        );
+        res.json({success:"Login Success",
+        displayName:how[0].name,
+        email:how[0].email,
+        photoURL:how[0].photo? how[0].photo:null 
+
+
+      });
       } else {
-        res.send("Invalid Entry0");
+        res.json({error:"Invalid Entry"});
       }
     });
   } else {
-    res.send("Invalid Entry1");
+    res.json({error:"Invalid Entry"});
   }
 };
 module.exports = { postController, loginController };
