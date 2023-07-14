@@ -1,6 +1,19 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { activeUser } from "../slice/UserSlice";
+import {  useDispatch } from "react-redux";
 
-const Navbar = ({ xox }) => {
+const Navbar = ({ xox }) => { 
+  let navigate = useNavigate();
+  let dispatch = useDispatch();
+
+  let logOut=()=>{
+    localStorage.removeItem("userInfo");
+    dispatch(activeUser(null))
+    console.log("Sing Out from:", window.location.pathname.split("/")[1]);
+    navigate("/login");
+
+  }
   return (
     <>
       <nav className="bg-white dark:bg-gray-900  w-full top-0 left-0 border-b border-gray-200 dark:border-gray-600">
@@ -19,6 +32,7 @@ const Navbar = ({ xox }) => {
 
           <button
             type="button"
+            onClick={logOut}
             className="inline-block rounded-full bg-danger px-5 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#dc4c64] transition duration-150 ease-in-out hover:bg-danger-800 hover:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.3),0_4px_18px_0_rgba(220,76,100,0.2)] focus:bg-danger-600 focus:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.3),0_4px_18px_0_rgba(220,76,100,0.2)] focus:outline-none focus:ring-0 active:bg-danger-700 active:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.3),0_4px_18px_0_rgba(220,76,100,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(220,76,100,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.2),0_4px_18px_0_rgba(220,76,100,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.2),0_4px_18px_0_rgba(220,76,100,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.2),0_4px_18px_0_rgba(220,76,100,0.1)]"
           >
             <svg

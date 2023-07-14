@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { activeUser } from "../slice/UserSlice";
+import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 
 const Login = () => {
@@ -10,9 +12,12 @@ const Login = () => {
   let [errorData, setError] = useState({
     name: "",
     email: "",
+    genErr:""
   });
   let [iCon, setIcon] = useState(false);
   let navigate = useNavigate();
+  let dispatch = useDispatch();
+  let reduxReturnData = useSelector((state) => state);
   // ############################### handle Change function start#####
   let handleChk = (e) => {
     let { name, value } = e.target;
@@ -21,7 +26,16 @@ const Login = () => {
     console.log(data);
   };
   // ############################### handle Change function endt#####
+  
+  //##### Page Navigate Start ####
+  useEffect(() => {
+    if (Boolean(reduxReturnData.userStoreData.userInfo) === true) {
+     
 
+      navigate("/user");
+    }
+  }, []);
+  //##### Page Navigate End ####
   // ############################### handle submit function start#####
   let handelSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +45,9 @@ const Login = () => {
         email: data.email,
       })
       .then((res) => {
-        console.log(res.data);
+        localStorage.setItem("userInfo", JSON.stringify(res.data));
+        dispatch(activeUser({ user: res.data }));
+        console.log(res);
 
         navigate("/user");
       })
@@ -143,6 +159,15 @@ const Login = () => {
                   Sign in with GitHub
                 </button>
               </div>
+              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                  Create New ?{" "}
+                  <a
+                    href="/ "
+                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                  >
+                    Registration
+                  </a>
+                </p>
             </div>
           </div>
         </div>
