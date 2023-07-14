@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import axios from "axios";
 
 export const Regi = () => {
   const [isChecked, setIsChecked] = useState(false);
   let [iCon, setIcon] = useState(false);
+  let [modal, setModal] = useState(false);
+  let [show, setShow] = useState(true);
 
   let [data, setData] = useState({
     name: "",
@@ -16,6 +20,17 @@ export const Regi = () => {
     email: "",
     check: "",
   });
+  let navigate = useNavigate();
+  let reduxReturnData = useSelector((state) => state);
+  //##### Page Navigate Start ####
+  useEffect(() => {
+    if (Boolean(reduxReturnData.userStoreData.userInfo) === true) {
+     
+
+      navigate("/user");
+    }
+  }, []);
+  //##### Page Navigate End ####
 
   // ############################### handle Change function start#####
   let handelChan = (e) => {
@@ -81,14 +96,27 @@ export const Regi = () => {
       setError({ ...errorData, pass: "Enter valid Password" });
     } else {
       if (isChecked) {
-        await axios.post("http://localhost:5000/lostFound/regi", {
-          name: data.name,
-          email: data.email,
-          pass: data.pass,
-        }).catch((err)=>{
-          console.log(err)
-        })
-       // data.name = "", data.email = "", data.pass = "", isChecked(false);
+        await axios
+          .post("http://localhost:5000/lostFound/regi", {
+            name: data.name,
+            email: data.email,
+            pass: data.pass,
+          })
+          .then((data) => {
+            (data.name = ""),
+              (data.email = ""),
+              (data.pass = ""),
+              isChecked === false;
+            setModal(true);
+            setShow(false);
+            setTimeout(() => {
+              navigate("/login");
+            }, 3000);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        //
       } else {
         setError({ ...errorData, check: "Click here" });
       }
@@ -103,7 +131,7 @@ export const Regi = () => {
 
   return (
     <>
-      <section className="bg-gray-50 dark:bg-gray-900">
+      <section className="bg-gray-50 dark:bg-gray-900 ">
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
             <div className="  ">
@@ -171,7 +199,7 @@ export const Regi = () => {
                     type={!iCon ? "password" : "text"}
                     name="pass"
                     id="password"
-                    value={data.pass}
+                    
                     placeholder="••••••••"
                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required=""
@@ -226,13 +254,18 @@ export const Regi = () => {
                     </label>
                   </div>
                 </div>
-
-                <button
-                  type="submit"
-                  className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                >
-                  Create an account
-                </button>
+                {show ? (
+                  <button
+                    type="submit"
+                    className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                  >
+                    Create an account
+                  </button>
+                ) : (
+                  <div className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+                    Create an account
+                  </div>
+                )}
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                   Already have an account?{" "}
                   <a
@@ -245,6 +278,28 @@ export const Regi = () => {
               </form>
             </div>
           </div>
+
+          {modal && (
+            <div className="flex justify-center items-end text-center min-h-screen sm:block absolute">
+              <div className="bg-gray-500 transition-opacity bg-opacity-75"></div>
+              <span className="hidden sm:inline-block sm:align-middle sm:h-screen"></span>
+              <div
+                className="inline-block text-left bg-gray-900 rounded-lg overflow-hidden align-bottom transition-all transform
+        shadow-2xl sm:my-8 sm:align-middle sm:max-w-xl sm:w-full"
+              >
+                <div className="items-center w-full mr-auto ml-auto relative max-w-7xl md:px-12 lg:px-24">
+                  <div className="grid grid-cols-1">
+                    <div className="mt-4 mr-auto mb-4 ml-auto rounded-full bg-green-400 max-w-lg">
+                      <img
+                        src="suc.svg"
+                        className="flex-shrink-0 object-cover object-center btn- flex w-20 h-20 mr-auto  ml-auto rounded-full shadow-xl"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </>

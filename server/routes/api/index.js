@@ -1,7 +1,8 @@
 const express = require("express");
 const _ = express.Router();
-const regiRoute = require("../../controller/regiCon");
+const { postController, loginController } = require("../../controller/regiCon");
 
-_.post("/regi", regiRoute);
+_.post("/regi", postController);
+_.post("/login", loginController);
 
 module.exports = _;

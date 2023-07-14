@@ -11,7 +11,8 @@ const User = () => {
           <div className="flex flex-col items-center pt-10 relative ">
             <div className="   ">
               <img
-                className="w-24 h-24 mb-3 rounded-full border-[2px] border-gray-600 shadow-2xl cursor-pointer "
+               // className="w-24 h-24 mb-3 rounded-full  shadow-2xl cursor-pointer "
+                className="flex-shrink-0 object-cover border-[2px] border-gray-600 object-center btn- flex w-16 h-16 mr-auto mb-3 ml-auto rounded-full shadow-xl"
                 src="react.svg"
                 alt="Bonnie image"
               />

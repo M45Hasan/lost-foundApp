@@ -10,11 +10,29 @@ const postController = async (req, res) => {
       email,
       pass: hash,
     });
-    mongo.save()
+    mongo.save();
     console.log(name, email, hash);
-    res.send(mongo)
+    res.send(mongo);
   });
-
- 
 };
-module.exports = postController;
+
+const loginController = async (req, res) => {
+  const { email, pass } = req.body;
+
+  const how = await Userinfo.find({ email });
+  if (how.length != 0) {
+    console.log(how[0].pass,how[0].name)
+    bcrypt.compare(pass, how[0].pass, function (err, result) {
+      if (result == true) {
+        res.send(
+          "Login Success"
+        );
+      } else {
+        res.send("Invalid Entry0");
+      }
+    });
+  } else {
+    res.send("Invalid Entry1");
+  }
+};
+module.exports = { postController, loginController };
