@@ -101,6 +101,7 @@ export const Regi = () => {
             name: data.name,
             email: data.email,
             pass: data.pass,
+            photoURL:data.photoURL
           })
           .then((data) => {
             (data.name = ""),
