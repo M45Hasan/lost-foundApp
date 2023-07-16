@@ -19,6 +19,7 @@ const regiSchema = new Schema({
   userImg: {
     type: String,
   },
+  
 });
 
 module.exports = mongoose.model("Userinfo", regiSchema);

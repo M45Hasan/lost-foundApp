@@ -9,6 +9,7 @@ const User = () => {
   let [hide, setHide] = useState(true);
   let navigate = useNavigate();
   let dispatch = useDispatch();
+
   let reduxReturnData = useSelector((state) => state);
 
   let [data, setData] = useState({
@@ -29,6 +30,8 @@ const User = () => {
   const [selectedImageUser, setSelectedImageUser] = useState(null);
   let [userModal, setUserModal] = useState(false);
   let [itemModal, setItemModal] = useState(false);
+  const [url, setUrl] = useState("");
+  const [userImg ,setUserImg]=useState("")
   //##### Page Navigate Start ####
 
   useEffect(() => {
@@ -40,12 +43,32 @@ const User = () => {
   //##### Page Navigate End ####
 
   //####### user Image upload start###
+  const convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
+
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
 
   const handleImageChange = (event) => {
     setSelectedImage(event.target.files[0]);
   };
-  const handleImageChangeUser = (event) => {
-    setSelectedImageUser(event.target.files[0]);
+  const handleImageChangeUser = async (event) => {
+    const files = event.target.files;
+    if (files.length === 1) {
+      const base64 = await convertBase64(files[0]);
+      setSelectedImageUser(base64);
+    } else {
+      setError({ ...errorData, itImage: "Failed" });
+    }
   };
   //####### user Image upload end###
 
@@ -65,7 +88,7 @@ const User = () => {
 
     console.log(data);
   };
-
+//cloudinary://854245338842351:afKo71cMZJoH21JDmEvDB53eAIQ@dy2v9tyor
   //####### submit end ###########
   //####### Modal submit start ###########
   let userModalHide = async () => {
@@ -76,11 +99,14 @@ const User = () => {
         userImg: selectedImageUser,
       })
       .then((res) => {
+       
+        
         console.log(res);
         setUserModal(false);
       })
       .catch((err) => {
         console.log(err.data);
+        setUserModal(false);
       });
   };
   let userModalShow = () => {
@@ -95,7 +121,13 @@ const User = () => {
     setItemModal(false);
   };
 
-  //#######Modal submit end ###########
+  //#######Modal submit end ########### 
+
+  //####### fetch data useffect start ###########
+  useEffect(()=>{
+
+  },[])
+  //####### fetch data useffect start ###########
 
   return (
     <div className="w-full ">
@@ -130,7 +162,7 @@ const User = () => {
                 onClick={userModalShow}
                 // className="w-24 h-24 mb-3 rounded-full  shadow-2xl cursor-pointer "
                 className="flex-shrink-0 object-cover border-[2px] border-gray-600 object-center btn- flex w-16 h-16 mr-auto mb-3 ml-auto rounded-full   shadow-xl"
-                src="react.svg"
+                src= "react.svg"
                 alt="Bonnie image"
               />
             </div>
