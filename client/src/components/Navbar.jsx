@@ -25,9 +25,9 @@ const Navbar = ({ xox }) => {
               alt="Flowbite Logo"
             />
           </div>
-          <div className="w-[100px] flex justify-between">
+          <div className="w-[200px] flex gap-x-4">
             <a href="/user" className="text-gray-400 font-sans font-semibold "> User </a>
-            <a href="/home" className="text-gray-400 font-sans font-semibold "> Home </a>
+            <a href="/home" className="text-gray-400 font-sans font-semibold "> Lost Item </a>
           </div>
 
           <button
@@ -54,12 +54,13 @@ const Navbar = ({ xox }) => {
           </button>
         </div>
       </nav>
+      {xox && (
       <aside
         id="default-sidebar"
         className="fixed top-18 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
         aria-label="Sidenav"
       >
-         {xox && (
+         
         <div className="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
          
             
@@ -334,8 +335,9 @@ const Navbar = ({ xox }) => {
            
           
         </div>
-        )}
+       
       </aside>
+       )}
     </>
   );
 };
