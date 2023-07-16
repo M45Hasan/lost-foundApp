@@ -13,7 +13,7 @@ export const Regi = () => {
     name: "",
     email: "",
     pass: "",
-    photoURL: "",
+    userImg: "",
   });
   let [errorData, setError] = useState({
     name: "",
@@ -101,7 +101,7 @@ export const Regi = () => {
             name: data.name,
             email: data.email,
             pass: data.pass,
-            photoURL:data.photoURL
+            userImg:data.userImg
           })
           .then((data) => {
             (data.name = ""),
