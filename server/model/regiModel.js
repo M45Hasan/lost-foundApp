@@ -19,7 +19,12 @@ const regiSchema = new Schema({
   userImg: {
     type: String,
   },
-  
+  lostpost_id: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: " lostitempost",
+    },
+  ],
 });
 
 module.exports = mongoose.model("Userinfo", regiSchema);
