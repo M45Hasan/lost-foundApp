@@ -8,6 +8,7 @@ const {
   loginController,
   profielPic,
   getUserImg,
+  getItemImg,
   uploadItem,
   uploadItemImg,
 } = require("../../controller/regiCon");
@@ -18,5 +19,6 @@ _.post("/profile", profielPic);
 _.post("/userImg", getUserImg);
 _.post("/itemupload", uploadItem);
 _.post("/itemImg", uploadItemImg);
+_.post("/getItImg", getItemImg);
 
 module.exports = _;

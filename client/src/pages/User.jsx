@@ -33,6 +33,7 @@ const User = () => {
   let [userModal, setUserModal] = useState(false);
   let [itemModal, setItemModal] = useState(false);
   const [url, setUrl] = useState([]);
+  const [u, setU] = useState([]);
   const [userImg, setUserImg] = useState("");
   //##### Page Navigate Start ####
 
@@ -71,7 +72,7 @@ const User = () => {
     }
     setSelectedImage(base64s);
   };
-  console.log(selectedImage);
+
   const handleImageChangeUser = async (event) => {
     const files = event.target.files;
     if (files.length === 1) {
@@ -82,7 +83,37 @@ const User = () => {
     }
   };
   //####### user Image upload end###
+  //###################### Loader  refresh start#####
+  const [loading, setLoading] = useState(false);
 
+  const handleClick = async () => {
+    setLoading(true);
+    // Perform operation and then set loading to false
+
+    await axios
+      .post("http://localhost:5000/lostFound/userImg", {
+        email: reduxReturnData.userStoreData.userInfo.email,
+      })
+      .then((res) => {
+        setUserImg(res.data[0].userImg);
+      });
+
+    await axios
+      .post("http://localhost:5000/lostFound/getItImg", {
+        email: reduxReturnData.userStoreData.userInfo.email,
+      })
+      .then((res) => {
+        setUrl(res.data[0].itImage);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  };
+  //###################### Loader  end#####
   //####### get inputData start ###########
   let getInput = (e) => {
     let { name, value } = e.target;
@@ -108,6 +139,7 @@ const User = () => {
       })
       .then((res) => {
         console.log(res);
+        setData("");
       })
       .catch((err) => {
         console.log(err);
@@ -146,7 +178,7 @@ const User = () => {
         itImage: selectedImage,
       })
       .then((res) => {
-        setUrl(res.data.itImage);
+        setU(res);
         setItemModal(false);
       })
       .catch((err) => {
@@ -154,24 +186,17 @@ const User = () => {
         setItemModal(false);
       });
   };
-  console.log(url);
+
   //#######Modal submit end ###########
 
   //####### fetch data useffect start ###########
 
-  const getImg = async () => {
-    await axios
-      .post("http://localhost:5000/lostFound/userImg", {
-        email: reduxReturnData.userStoreData.userInfo.email,
-      })
-      .then((res) => {
-        setUserImg(res.data[0].userImg);
-      });
-  };
-  getImg();
+  console.log(url);
 
   //####### fetch data useffect start ###########
+  //#################### render ######
 
+  //#################### render end ####
   return (
     <div className="w-full  ">
       <Navbar xox={false} />
@@ -231,10 +256,10 @@ const User = () => {
                 className=" text-gray-900 text-sm  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
                 <option selected>Choose a category</option>
-                <option value="mb">Mobile</option>
-                <option value="ele">Electronic</option>
-                <option value="doc">Document</option>
-                <option value="hum">Human</option>
+                <option value="Mobile">Mobile</option>
+                <option value="Electronic">Electronic</option>
+                <option value="Document">Document</option>
+                <option value="Human">Human</option>
               </select>
               <label className="block mt-[2px] text-sm font-medium text-gray-900 dark:text-gray-400">
                 Sub-category
@@ -274,7 +299,15 @@ const User = () => {
                 </button>
               </div>
             </form>
-
+            <button
+              className={`bg-cyan-500 rounded-full hover:bg-purple-700 text-white absolute top-[290px] right-0 py-2 px-2  ${
+                loading ? "cursor-not-allowed opacity-25" : ""
+              }`}
+              onClick={handleClick}
+              disabled={loading}
+            >
+              <img className="w-2 h-2 " src="ref.svg" />
+            </button>
             <div className="mt-2 h-[240px top-[280px] absolute ">
               <label className="block mt-[2px] text-sm font-medium text-gray-900 dark:text-gray-400">
                 Upload Image
@@ -293,10 +326,17 @@ const User = () => {
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />{" "}
                 <circle cx="12" cy="13" r="4" />
               </svg>
-              {url &&
-                url.map((img) => {
-                  <img className="mt-2 mx-2 h-[180px] w-[95%]" src={img} />;
-                })}
+
+              <div className="flex  flex-wrap  mt-2 mx-2 h-[180px] w-[95%]">
+                {url.map((pic, i) => (
+                  <img
+                    className=" h-[85px] w-[155px] mx-[5px] "
+                    src={pic}
+                    alt={i}
+                  />
+                ))}
+              </div>
+
               {itemModal && (
                 <div className="items-center w-full mr-auto ml-auto  max-w-7xl md:px-12 lg:px-18 absolute  top-[50px] z-20 shadow-2xl   rounded-full">
                   <div className="grid grid-cols-1 relative">

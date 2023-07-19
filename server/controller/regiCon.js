@@ -76,6 +76,16 @@ const getUserImg = async (req, res) => {
     res.send(data);
   });
 };
+const getItemImg = async (req, res) => {
+  const { email } = req.body;
+  await Itemhelper.find({ email })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+};
 
 //##### get ##############################get end##########
 
@@ -84,7 +94,7 @@ const uploadItem = async (req, res) => {
     req.body;
   const how = await Userinfo.find({ email });
   const low = await Itemhelper.find({ email });
-  if (how.length > 0) {
+  if (how.length > 0 && low.length > 0) {
     const create = new Lostitempost({
       email,
       category,
@@ -104,7 +114,7 @@ const uploadItem = async (req, res) => {
 
     res.json({ message: "Done" });
   } else {
-    res.json({ error: "Upload failed" });
+    res.json({ error: "Kindly add item images" });
   }
 };
 
@@ -132,6 +142,7 @@ module.exports = {
   loginController,
   profielPic,
   getUserImg,
+  getItemImg,
   uploadItem,
   uploadItemImg,
 };
