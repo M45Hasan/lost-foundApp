@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { activeUser } from "../slice/UserSlice";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
+import  Card  from "../components/Card";
 
 const User = () => {
   let [hide, setHide] = useState(true);
@@ -145,7 +146,7 @@ const User = () => {
         console.log(err);
       });
   };
-  //cloudinary://854245338842351:afKo71cMZJoH21JDmEvDB53eAIQ@dy2v9tyor
+
   //####### submit end ###########
   //####### Modal submit start ###########
   let userModalHide = async () => {
@@ -330,6 +331,7 @@ const User = () => {
               <div className="flex  flex-wrap  mt-2 mx-2 h-[180px] w-[95%]">
                 {url.map((pic, i) => (
                   <img
+                    key={i}
                     className=" h-[85px] w-[155px] mx-[5px] "
                     src={pic}
                     alt={i}
@@ -362,7 +364,9 @@ const User = () => {
             </div>
           </div>
         </div>
-        <div className="w-[70%]  bg-red-400 "></div>
+        <div className="w-[70%]  bg-red-400 ">
+          <Card />
+        </div>
       </div>
     </div>
   );

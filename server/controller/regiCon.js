@@ -78,13 +78,15 @@ const getUserImg = async (req, res) => {
 };
 const getItemImg = async (req, res) => {
   const { email } = req.body;
-  await Itemhelper.find({ email })
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.send(err);
-    });
+  try {
+    const how = await Itemhelper.find({ email });
+    if (!how.length > 0) {
+      res.jason({ error: "Kindly Upload Item image" });
+    }
+    res.send(how);
+  } catch (err) {
+    res.send(err);
+  }
 };
 
 //##### get ##############################get end##########
