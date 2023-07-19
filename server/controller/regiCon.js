@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const Userinfo = require("../model/regiModel");
 const cloudinary = require("../utils/cloudinary");
 const upload = require("../utils/multer");
+const Lostitempost = require("../model/lostPostModel");
+const Itemhelper = require("../model/itmHelperModel");
 
 const opts = {
   overwrite: true,
@@ -67,9 +69,80 @@ const profielPic =
       { new: true }
     );
   });
+//##### get ##############################get##########
+const getUserImg = async (req, res) => {
+  const { email } = req.body;
+  await Userinfo.find({ email }).then((data) => {
+    res.send(data);
+  });
+};
+const getItemImg = async (req, res) => {
+  const { email } = req.body;
+  await Itemhelper.find({ email })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+};
 
-  const getUserImg= async( req,res)=>{
-    
+//##### get ##############################get end##########
 
+const uploadItem = async (req, res) => {
+  const { email, category, subcat, detail, location, itImage, postlist_id } =
+    req.body;
+  const how = await Userinfo.find({ email });
+  const low = await Itemhelper.find({ email });
+  if (how.length > 0 && low.length > 0) {
+    const create = new Lostitempost({
+      email,
+      category,
+      subcat,
+      detail,
+      location,
+      itImage: low[0].itImage,
+      postlist_id: how[0]._id,
+    });
+    create.save();
+    await Itemhelper.findByIdAndDelete({ _id: low[0]._id });
+
+    await Userinfo.findOneAndUpdate(
+      { email },
+      { $push: { lostpost_id: create._id } }
+    );
+
+    res.json({ message: "Done" });
+  } else {
+    res.json({ error: "Kindly add item images" });
   }
-module.exports = { postController, loginController, profielPic };
+};
+
+const uploadItemImg =
+  (upload.array("images", 4),
+  async (req, res) => {
+    const { email, itImage } = req.body;
+
+    const imgUrl = [];
+
+    for (const pic of itImage) {
+      const result = await cloudinary.uploader.upload(pic);
+      imgUrl.push(result.secure_url);
+    }
+    const create = new Itemhelper({
+      email: email,
+      itImage: imgUrl,
+    });
+    create.save().then((result) => {
+      res.send(result);
+    });
+  });
+module.exports = {
+  postController,
+  loginController,
+  profielPic,
+  getUserImg,
+  getItemImg,
+  uploadItem,
+  uploadItemImg,
+};
