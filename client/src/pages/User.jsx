@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { activeUser } from "../slice/UserSlice";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import  Card  from "../components/Card";
+import Card from "../components/Card";
 
 const User = () => {
   let [hide, setHide] = useState(true);
@@ -36,6 +36,9 @@ const User = () => {
   const [url, setUrl] = useState([]);
   const [u, setU] = useState([]);
   const [userImg, setUserImg] = useState("");
+  const [myPostCard, setMyPostCard] = useState(false);
+
+  const [postList, setPostList] = useState([]);
   //##### Page Navigate Start ####
 
   useEffect(() => {
@@ -90,14 +93,6 @@ const User = () => {
   const handleClick = async () => {
     setLoading(true);
     // Perform operation and then set loading to false
-
-    await axios
-      .post("http://localhost:5000/lostFound/userImg", {
-        email: reduxReturnData.userStoreData.userInfo.email,
-      })
-      .then((res) => {
-        setUserImg(res.data[0].userImg);
-      });
 
     await axios
       .post("http://localhost:5000/lostFound/getItImg", {
@@ -195,11 +190,40 @@ const User = () => {
   console.log(url);
 
   //####### fetch data useffect start ###########
-  //#################### render ######
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        let how = await axios.post("http://localhost:5000/lostFound/userImg", {
+          email: reduxReturnData.userStoreData.userInfo.email,
+        });
+        setUserImg(how.data[0].userImg);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getData();
+  }, []);
 
-  //#################### render end ####
+  useEffect(() => {
+    const getPostList = async () => {
+      try {
+        let how = await axios.post(
+          "http://localhost:5000/lostFound/getpostlist",
+          {
+            email: reduxReturnData.userStoreData.userInfo.email,
+          }
+        );
+        setPostList(how);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getPostList();
+  }, []);
+
+  //#################### fetch data useffect end ####
   return (
-    <div className="w-full  ">
+    <div className="w-full  dark:bg-gray-600 ">
       <Navbar xox={false} />
 
       <div className=" flex justify-between  ">
@@ -364,8 +388,90 @@ const User = () => {
             </div>
           </div>
         </div>
-        <div className="w-[70%]  bg-red-400 ">
-          <Card />
+        <div className="w-[70%] relative p-4">
+          <div className="w-[700px] mt-10  border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+            <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+              My Post Item
+            </h5>
+            <ul className="flex gap-x-4 flex-wrap">
+              {Object.values(postList) &&
+                Object.values(postList).map((item, key) => (
+                  <li
+                    key={key}
+                    onClick={() => setMyPostCard(true)}
+                    className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
+                  >
+                    {" "}
+                    <div className=" items-center flex h-[80px] pl-1 space-x-2">
+                      <div className="flex-shrink-0">
+                        <img
+                          className="w-12 h-12 rounded-sm"
+                          src={""}
+                          alt="Bonnie image"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                          {""}
+                        </p>
+                        <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                          "Nokia"
+                        </p>
+                        <p className="text-[10px] text-cyan-500 truncate dark:text-cyan-400">
+                          "Mirpur"
+                        </p>
+                      </div>
+                    </div>{" "}
+                  </li>
+                ))}
+            </ul>
+          </div>
+          <div className="w-full mt-14 border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+            <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+              Delivered to owner
+            </h5>
+            <ul className="flex gap-x-4 flex-wrap">
+              <li className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  ">
+                {" "}
+                <div className=" items-center flex h-[80px] pl-1 space-x-2">
+                  <div className="flex-shrink-0">
+                    <img
+                      className="w-12 h-12 rounded-sm"
+                      src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
+                      alt="Bonnie image"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                      Mobile
+                    </p>
+                    <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                      "Nokia"
+                    </p>
+                    <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                      Owner: "Salauddin"
+                    </p>
+                    <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                      Comment: "Good "
+                    </p>
+                  </div>
+                </div>{" "}
+              </li>
+            </ul>
+          </div>
+
+          {myPostCard && (
+            <div className="translate-y-[-337px] translate-x-[-52px]">
+              <Card />
+
+              <button
+                onClick={() => setMyPostCard(false)}
+                className="w-[20px]  rounded-full absolute top-1 right-[50px] z-30  h-[20px]  text-red-700 hover:text-white  hover:bg-red-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm   dark:text-red-500 dark:hover:text-white dark:hover:bg-red-500 dark:focus:ring-blue-800 "
+              >
+                X
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

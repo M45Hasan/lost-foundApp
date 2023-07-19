@@ -4,7 +4,7 @@ export const Card = () => {
   const [slideUrl, setSlideUrl] = useState("");
   const [mesModal, setMesModal] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
-  const [xOpen, setxOpen] = useState(true);
+  const [xOpen, setxOpen] = useState(false);
   const [claimer, setClaimer] = useState(false);
 
   //#### slider start #####
@@ -33,7 +33,8 @@ export const Card = () => {
   };
   //###### Message function end #####
   return (
-    <div className=" mx-auto bg-white rounded-xl shadow-md overflow-hidden mt-10 h-[500px] relative md:max-w-[850px] flex ">
+   
+    <div className=" mx-auto bg-white rounded-xl shadow-md overflow-hidden mt-10 h-[500px] relative md:max-w-[850px] flex  ">
       <div className=" w-[50%]  dark:bg-gray-700 h-full">
         <div className="h-[400px] flex items-center justify-center">
           <img
@@ -354,6 +355,7 @@ export const Card = () => {
         </div>
       )}
     </div>
+   
   );
 };
 

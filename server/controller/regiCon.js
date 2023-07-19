@@ -89,6 +89,19 @@ const getItemImg = async (req, res) => {
   }
 };
 
+const getLostItemPost = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const how = await Lostitempost.find({ email });
+    if (how.length > 0) {
+      res.send(how);
+    } else {
+      res.json({ error: "Ki j hoyce" });
+    }
+  } catch (err) {
+    res.json({ error: "Not success" });
+  }
+};
 //##### get ##############################get end##########
 
 const uploadItem = async (req, res) => {
@@ -147,4 +160,5 @@ module.exports = {
   getItemImg,
   uploadItem,
   uploadItemImg,
+  getLostItemPost,
 };
