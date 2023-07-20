@@ -11,7 +11,8 @@ const {
   getItemImg,
   uploadItem,
   uploadItemImg,
-  getLostItemPost
+  getLostItemPost,
+  upDate
 } = require("../../controller/regiCon");
 
 _.post("/regi", postController);
@@ -22,5 +23,6 @@ _.post("/itemupload", uploadItem);
 _.post("/itemImg", uploadItemImg);
 _.post("/getItImg", getItemImg);
 _.post("/getpostlist", getLostItemPost);
+_.post("/userupdate", upDate);
 
 module.exports = _;

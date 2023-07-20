@@ -105,8 +105,17 @@ const getLostItemPost = async (req, res) => {
 //##### get ##############################get end##########
 
 const uploadItem = async (req, res) => {
-  const { email, category, subcat, detail, location, itImage, postlist_id } =
-    req.body;
+  const {
+    name,
+    email,
+    userImg,
+    category,
+    subcat,
+    detail,
+    location,
+    itImage,
+    postlist_id,
+  } = req.body;
   const how = await Userinfo.find({ email });
   const low = await Itemhelper.find({ email });
   if (how.length > 0 && low.length > 0) {
@@ -118,6 +127,8 @@ const uploadItem = async (req, res) => {
       location,
       itImage: low[0].itImage,
       postlist_id: how[0]._id,
+      userImg,
+      name: how[0].name,
     });
     create.save();
     await Itemhelper.findByIdAndDelete({ _id: low[0]._id });
@@ -152,6 +163,16 @@ const uploadItemImg =
       res.send(result);
     });
   });
+
+const upDate = async (req, res) => {
+  const { email } = req.body;
+  let how = await Userinfo.find({ email });
+  if (how.length != 0) {
+    res.send(how[0].userImg);
+  } else {
+    res.json({ error: "errro" });
+  }
+};
 module.exports = {
   postController,
   loginController,
@@ -161,4 +182,5 @@ module.exports = {
   uploadItem,
   uploadItemImg,
   getLostItemPost,
+  upDate,
 };

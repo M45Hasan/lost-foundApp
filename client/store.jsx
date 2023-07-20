@@ -1,7 +1,9 @@
-import{ configureStore} from "@reduxjs/toolkit"
+import { configureStore } from "@reduxjs/toolkit";
 import userSlice from "./src/slice/userSlice";
-export default  configureStore({
+import picSlice from "./src/slice/picSlice";
+export default configureStore({
   reducer: {
     userStoreData: userSlice,
+    userPic: picSlice,
   },
 });

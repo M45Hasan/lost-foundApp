@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-export const Card = () => {
+export const Card = (dat) => {
   const [slideUrl, setSlideUrl] = useState("");
   const [mesModal, setMesModal] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [xOpen, setxOpen] = useState(false);
   const [claimer, setClaimer] = useState(false);
+  const [update, setUpdate] = useState("");
 
   //#### slider start #####
   const picClick = (e) => {
-    console.log(e.target.src);
     setSlideUrl(e.target.src);
   };
 
@@ -31,129 +32,127 @@ export const Card = () => {
     console.log("hello");
     setChatOpen(false);
   };
+  useEffect(() => {
+    const updateUser = async () => {
+      try {
+        const how = await axios.post(
+          "http://localhost:5000/lostFound/userupdate",
+          {
+            email: dat.dat.email,
+          }
+        );
+        setUpdate(how.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    updateUser();
+  }, []);
+  console.log(update);
   //###### Message function end #####
   return (
-   
     <div className=" mx-auto bg-white rounded-xl shadow-md overflow-hidden mt-10 h-[500px] relative md:max-w-[850px] flex  ">
-      <div className=" w-[50%]  dark:bg-gray-700 h-full">
-        <div className="h-[400px] flex items-center justify-center">
-          <img
-            className="w-[330px] rounded-lg object-cover  shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ease-in-out duration-500 hover:scale-110  "
-            src={slideUrl}
-            alt="Product Image 1"
-          />
-        </div>
-
-        <div className="w-full h-full border-t-2 rounded-lg ">
-          <div className="  mt-[14px] mx-6 h-[180px] w-[95%] flex  flex-wrap">
+      <>
+        <div className=" w-[50%]  dark:bg-gray-700 h-full">
+          <div className="h-[400px] flex items-center justify-center">
             <img
-              onClick={(e) => picClick(e)}
-              key="p"
-              className=" rounded-sm h-[70px] w-[70px] mx-[10px] object-cover  shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] cursor-pointer ease-in-out duration-500 hover:rotate-6 hover:scale-125 "
-              src="https://res.cloudinary.com/dy2v9tyor/image/upload/v1689644859/paku%40mailinator.com.png"
-              alt=""
-            />
-
-            <img
-              onClick={(e) => picClick(e)}
-              key="p"
-              className=" rounded-sm h-[70px] w-[70px] mx-[10px] object-cover shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] cursor-pointer ease-in-out duration-500 hover:rotate-6 hover:scale-125 "
-              src="react.svg"
-              alt=""
-            />
-
-            <img
-              key="p"
-              className=" rounded-sm h-[70px] w-[70px] mx-[10px] object-cover shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] cursor-pointer ease-in-out duration-500 hover:rotate-6 hover:scale-125 "
-              src="https://res.cloudinary.com/dy2v9tyor/image/upload/v1689644859/paku%40mailinator.com.png"
-              alt=""
-            />
-
-            <img
-              key="p"
-              className=" rounded-sm h-[70px] w-[70px] mx-[10px] object-cover shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] cursor-pointer ease-in-out duration-500 hover:rotate-6 hover:scale-125 "
-              src="https://res.cloudinary.com/dy2v9tyor/image/upload/v1689644859/paku%40mailinator.com.png"
-              alt=""
+              className="w-[330px] rounded-lg object-cover  shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ease-in-out duration-500 hover:scale-110  "
+              src={slideUrl}
+              alt="Product Image 1"
             />
           </div>
-        </div>
-      </div>
-      <div className="h-full dark:bg-gray-800 w-1/2 p-4">
-        <div className="block max-w-sm  p-2 bg-white border h-full border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-          <h3 className=" text-xl font-bold mb-2 tracking-tight text-gray-900 dark:text-white">
-            Product Info
-          </h3>
-          <div className="w-[70%]  border border-gray-600 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
-            <h1 className=" text-md font-semibold tracking-tight text-gray-900 dark:text-white">
-              Category
-            </h1>
-            <p className="font-normal text-sm text-gray-700 dark:text-gray-400">
-              Mobile
-            </p>
-          </div>
-          <div className="w-[70%] border mt-1 border-gray-600 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
-            <h1 className=" text-md font-semibold tracking-tight text-gray-900 dark:text-white">
-              Sub-Category
-            </h1>
-            <p className="font-normal text-sm text-gray-700 dark:text-gray-400">
-              Nokia 3300
-            </p>
-          </div>
-          <div className="w-[70%] border mt-1 border-gray-600 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
-            <h1 className=" text-md font-semibold tracking-tight text-gray-900 dark:text-white">
-              Location
-            </h1>
-            <p className="font-normal text-sm text-gray-700 dark:text-gray-400">
-              Mirpur
-            </p>
-          </div>
-          <div className="w-[70%] border mt-1 border-gray-600 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
-            <h1 className=" text-md font-semibold tracking-tight text-gray-900 dark:text-white">
-              Produc Detail
-            </h1>
-            <p className="font-normal text-sm text-gray-700 dark:text-gray-400">
-              I lost 2007
-            </p>
-          </div>
-          <div className="w-[70%] border-1 mt-2 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
-            <div className="flex items-center h-[80px] pl-4 space-x-4">
-              <div className="flex-shrink-0">
+
+          <div className="w-full h-full border-t-2 rounded-lg ">
+            <div className="  mt-[14px] mx-6 h-[180px] w-[95%] flex  flex-wrap">
+              {dat.dat.itImage.map((url, i) => (
                 <img
-                  className="w-8 h-8 rounded-full"
-                  src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
-                  alt="Bonnie image"
+                  key={i}
+                  onClick={(e) => picClick(e)}
+                  className=" rounded-sm h-[70px] w-[70px] mx-[10px] object-cover  shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] cursor-pointer ease-in-out duration-500 hover:rotate-6 hover:scale-125 "
+                  src={url}
+                  alt=""
                 />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                  Hasan
-                </p>
-                <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                  "Hey I found this Product"
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="w-[100%] border-1 mt-2 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
-            <div className="flex items-center h-[80px] pl-4 space-x-4 ">
-              <button
-                onClick={() => setMesModal(true)}
-                type="button"
-                className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
-              >
-                Message
-              </button>
-              <button
-                onClick={() => setClaimer(true)}
-                type="button"
-                className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
-              >
-                Claimer
-              </button>
+              ))}
             </div>
           </div>
         </div>
-      </div>
+        <div className="h-full dark:bg-gray-800 w-1/2 p-4">
+          <div className="block max-w-sm  p-2 bg-white border h-full border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+            <h3 className=" text-xl font-bold mb-2 tracking-tight text-gray-900 dark:text-white">
+              Product Info
+            </h3>
+            <div className="w-[70%]  border border-gray-600 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+              <h1 className=" text-md font-semibold tracking-tight text-gray-900 dark:text-white">
+                Category
+              </h1>
+              <p className="font-normal text-sm text-gray-700 dark:text-gray-400">
+                {dat.dat.category}
+              </p>
+            </div>
+            <div className="w-[70%] border mt-1 border-gray-600 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+              <h1 className=" text-md font-semibold tracking-tight text-gray-900 dark:text-white">
+                Sub-Category
+              </h1>
+              <p className="font-normal text-sm text-gray-700 dark:text-gray-400">
+                {dat.dat.subcat}
+              </p>
+            </div>
+            <div className="w-[70%] border mt-1 border-gray-600 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+              <h1 className=" text-md font-semibold tracking-tight text-gray-900 dark:text-white">
+                Location
+              </h1>
+              <p className="font-normal text-sm text-gray-700 dark:text-gray-400">
+                {dat.dat.location}
+              </p>
+            </div>
+            <div className="w-[70%] border mt-1 border-gray-600 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+              <h1 className=" text-md font-semibold tracking-tight text-gray-900 dark:text-white">
+                Produc Detail
+              </h1>
+              <p className="font-normal text-sm text-gray-700 dark:text-gray-400">
+                {dat.dat.detail}
+              </p>
+            </div>
+            <div className="w-[70%] border-1 mt-2 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+              <div className="flex items-center h-[80px] pl-4 space-x-4">
+                <div className="flex-shrink-0">
+                  <img
+                    className="w-8 h-8 rounded-full"
+                    src={update ? update : "react.svg"}
+                    alt="Bonnie image"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                    {dat.dat.name}
+                  </p>
+                  <p className="text-sm text-gray-500 truncate dark:text-gray-400">
+                    "Hey I found this Product"
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="w-[100%] border-1 mt-2 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+              <div className="flex items-center h-[80px] pl-4 space-x-4 ">
+                <button
+                  onClick={() => setMesModal(true)}
+                  type="button"
+                  className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
+                >
+                  Message
+                </button>
+                <button
+                  onClick={() => setClaimer(true)}
+                  type="button"
+                  className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
+                >
+                  Claimer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
 
       {mesModal && (
         <div className="block w-full absolute p-2 right-0 bg-white border h-full border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
@@ -250,9 +249,7 @@ export const Card = () => {
                 {xOpen && (
                   <button
                     onClick={() => (
-                      setChatOpen(false),
-                      setxOpen(false),
-                      console.log(chatOpen)
+                      setChatOpen(false), setxOpen(false), console.log(chatOpen)
                     )}
                     className="w-[105px] absolute right-[260px] z-30 bottom-[1px] h-[30px]  border-t-2 text-red-700 hover:text-white b border-red-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm  dark:border-blue-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800 "
                   >
@@ -266,7 +263,9 @@ export const Card = () => {
           <div className="w-[100%] border-1 mt-1 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
             <div className="flex items-center justify-end h-[40px] pl-1 space-x-4 ">
               <button
-                onClick={() => (setMesModal(false), setChatOpen(false),setxOpen(false))}
+                onClick={() => (
+                  setMesModal(false), setChatOpen(false), setxOpen(false)
+                )}
                 type="button"
                 className="text-red-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-2 mb-2 dark:border-blue-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-500 dark:focus:ring-blue-800"
               >
@@ -278,12 +277,14 @@ export const Card = () => {
       )}
 
       {claimer && (
-        <div onClick={()=>setClaimer(false)} className="w-[420px] overflow-y-scroll max-w-md h-[450px] p-4 right-0 bg-white absolute border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+        <div
+          onClick={() => setClaimer(false)}
+          className="w-[420px] overflow-y-scroll max-w-md h-[450px] p-4 right-0 bg-white absolute border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700"
+        >
           <div className="flex items-center justify-between mb-4">
             <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
               Claimer
             </h5>
-          
           </div>
           <div className="flow-root">
             <ul
@@ -307,7 +308,6 @@ export const Card = () => {
                       email@windster.com
                     </p>
                   </div>
-                  
                 </div>
               </li>
               <li className="py-3 sm:py-4">
@@ -327,7 +327,6 @@ export const Card = () => {
                       email@windster.com
                     </p>
                   </div>
-                
                 </div>
               </li>
               <li className="py-3 sm:py-4">
@@ -347,7 +346,6 @@ export const Card = () => {
                       email@windster.com
                     </p>
                   </div>
-                
                 </div>
               </li>
             </ul>
@@ -355,7 +353,6 @@ export const Card = () => {
         </div>
       )}
     </div>
-   
   );
 };
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { activeUser } from "../slice/UserSlice";
+import { activePic } from "../slice/picSlice";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import Card from "../components/Card";
@@ -21,6 +22,8 @@ const User = () => {
     location: "",
     itImage: "",
     postlist_id: "",
+    name: "",
+    userImg: reduxReturnData.userPic.proPic,
   });
   let [errorData, setError] = useState({
     category: "",
@@ -37,8 +40,10 @@ const User = () => {
   const [u, setU] = useState([]);
   const [userImg, setUserImg] = useState("");
   const [myPostCard, setMyPostCard] = useState(false);
+  const [trans, setTrans] = useState("");
 
   const [postList, setPostList] = useState([]);
+
   //##### Page Navigate Start ####
 
   useEffect(() => {
@@ -132,6 +137,8 @@ const User = () => {
         location: data.location,
         itImage: data.itImage,
         postlist_id: data.postlist_id,
+        userImg: data.userImg,
+        name: data.name,
       })
       .then((res) => {
         console.log(res);
@@ -152,6 +159,11 @@ const User = () => {
         userImg: selectedImageUser,
       })
       .then((res) => {
+        localStorage.setItem("proPic", JSON.stringify(res.data.secure_url));
+        dispatch(activePic({ pic: res.data.secure_url })).catch((err) => {
+          console.log(err);
+        });
+        setUserImg(userImg);
         console.log(res);
         setUserModal(false);
       })
@@ -187,8 +199,6 @@ const User = () => {
 
   //####### fetch data useffect start ###########
 
-  console.log(url);
-
   //####### fetch data useffect start ###########
   useEffect(() => {
     const getData = async () => {
@@ -213,13 +223,22 @@ const User = () => {
             email: reduxReturnData.userStoreData.userInfo.email,
           }
         );
-        setPostList(how);
+        if (how.data.length > 0) {
+          setPostList(how.data);
+        } else {
+          setPostList("");
+        }
       } catch (err) {
         console.log(err);
       }
     };
     getPostList();
   }, []);
+
+  const logOn = (data) => {
+    setTrans(data);
+    setMyPostCard(true);
+  };
 
   //#################### fetch data useffect end ####
   return (
@@ -394,31 +413,33 @@ const User = () => {
               My Post Item
             </h5>
             <ul className="flex gap-x-4 flex-wrap">
-              {Object.values(postList) &&
-                Object.values(postList).map((item, key) => (
+              {postList &&
+                postList.map((data, i) => (
                   <li
-                    key={key}
-                    onClick={() => setMyPostCard(true)}
+                    key={i}
+                    // onClick={(item) => (setMyPostCard(true),console.log(item))}
+                    onClick={() => logOn(data)}
                     className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
                   >
                     {" "}
                     <div className=" items-center flex h-[80px] pl-1 space-x-2">
-                      <div className="flex-shrink-0">
+                      <div key={u} className="flex-shrink-0">
                         <img
                           className="w-12 h-12 rounded-sm"
-                          src={""}
-                          alt="Bonnie image"
+                          src={data.itImage[0]}
+                          alt={""}
                         />
                       </div>
-                      <div className="flex-1 min-w-0">
+
+                      <div className="flex-1 min-w-[140px]">
                         <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                          {""}
+                          {data.category}
                         </p>
                         <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
-                          "Nokia"
+                          {data.subcat}
                         </p>
                         <p className="text-[10px] text-cyan-500 truncate dark:text-cyan-400">
-                          "Mirpur"
+                          {data.location}
                         </p>
                       </div>
                     </div>{" "}
@@ -461,8 +482,8 @@ const User = () => {
           </div>
 
           {myPostCard && (
-            <div className="translate-y-[-337px] translate-x-[-52px]">
-              <Card />
+            <div className="translate-y-[-337px]  translate-x-[-52px]">
+              <Card dat={trans} />
 
               <button
                 onClick={() => setMyPostCard(false)}
