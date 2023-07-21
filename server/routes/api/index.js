@@ -11,6 +11,11 @@ const {
   getItemImg,
   uploadItem,
   uploadItemImg,
+  getLostItemPost,
+  upDate,
+  getAllItemPost,
+  claimFn,
+  claimerDb
 } = require("../../controller/regiCon");
 
 _.post("/regi", postController);
@@ -20,5 +25,11 @@ _.post("/userImg", getUserImg);
 _.post("/itemupload", uploadItem);
 _.post("/itemImg", uploadItemImg);
 _.post("/getItImg", getItemImg);
+_.post("/getpostlist", getLostItemPost);
+_.post("/userupdate", upDate);
+_.post("/getallpostlist", getAllItemPost);
+_.post("/claim", claimFn);
+_.get("/claimbd", claimerDb);
 
 module.exports = _;
+ 

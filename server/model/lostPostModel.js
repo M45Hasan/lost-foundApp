@@ -22,10 +22,18 @@ const lostItemSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: " userinfo",
   },
-  itImage: [{
+  itImage: [
+    {
+      type: String,
+      require: true,
+    },
+  ],
+  userImg: {
     type: String,
-    require:true
-  }],
+  },
+  name: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model("Lostitempost", lostItemSchema);

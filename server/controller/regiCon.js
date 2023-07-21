@@ -6,6 +6,7 @@ const cloudinary = require("../utils/cloudinary");
 const upload = require("../utils/multer");
 const Lostitempost = require("../model/lostPostModel");
 const Itemhelper = require("../model/itmHelperModel");
+const Claim = require("../model/claimModel");
 
 const opts = {
   overwrite: true,
@@ -89,11 +90,118 @@ const getItemImg = async (req, res) => {
   }
 };
 
+const getLostItemPost = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const how = await Lostitempost.find({ email });
+    if (how.length > 0) {
+      res.send(how);
+    } else {
+      res.json({ error: "Ki j hoyce" });
+    }
+  } catch (err) {
+    res.json({ error: "Not success" });
+  }
+};
+const getAllItemPost = async (req, res) => {
+  try {
+    const how = await Lostitempost.find();
+    if (how.length > 0) {
+      res.send(how);
+    } else {
+      res.json({ error: "Ki j hoyce" });
+    }
+  } catch (err) {
+    res.json({ error: "Not success" });
+  }
+};
+///#################  claimer Database start###########
+const claimFn = async (req, res) => {
+  const {
+    claimerName,
+    claimerEmail,
+    claimerURL,
+    claimItemId,
+    category,
+    subcat,
+    finderName,
+    fiderId,
+    fiderURL,
+  } = req.body;
+  const how = await Claim.find({ claimItemId });
+
+  if (!how.length > 0) {
+    const cret = new Claim({
+      claimerName,
+      claimerEmail,
+      claimerURL,
+      claimItemId,
+      category,
+      subcat,
+      finderName,
+      fiderId,
+      fiderURL,
+    });
+
+    cret
+      .save()
+      .then((data) => {
+        res.send(data);
+      })
+      .catch((err) => {
+        res.send(err);
+      });
+  } else {
+    if (how[0].claimerEmail === claimerEmail) {
+      res.json({ error: "Already calimed " });
+    } else {
+      const cret = new Claim({
+        claimerName,
+        claimerEmail,
+        claimerURL,
+        claimItemId,
+        category,
+        subcat,
+        finderName,
+        fiderId,
+        fiderURL,
+      });
+
+      cret
+        .save()
+        .then((data) => {
+          res.send(data);
+        })
+        .catch((err) => {
+          res.send(err);
+        });
+    }
+  }
+};
+
+const claimerDb = async (req, res) => {
+  try {
+    const how = await Claim.find({});
+    res.send(how);
+  } catch (err) {
+    res.send(err);
+  }
+};
+///#################  claimer Database end###########
 //##### get ##############################get end##########
 
 const uploadItem = async (req, res) => {
-  const { email, category, subcat, detail, location, itImage, postlist_id } =
-    req.body;
+  const {
+    name,
+    email,
+    userImg,
+    category,
+    subcat,
+    detail,
+    location,
+    itImage,
+    postlist_id,
+  } = req.body;
   const how = await Userinfo.find({ email });
   const low = await Itemhelper.find({ email });
   if (how.length > 0 && low.length > 0) {
@@ -105,6 +213,8 @@ const uploadItem = async (req, res) => {
       location,
       itImage: low[0].itImage,
       postlist_id: how[0]._id,
+      userImg,
+      name: how[0].name,
     });
     create.save();
     await Itemhelper.findByIdAndDelete({ _id: low[0]._id });
@@ -139,6 +249,16 @@ const uploadItemImg =
       res.send(result);
     });
   });
+
+const upDate = async (req, res) => {
+  const { email } = req.body;
+  let how = await Userinfo.find({ email });
+  if (how.length != 0) {
+    res.send(how[0].userImg);
+  } else {
+    res.json({ error: "errro" });
+  }
+};
 module.exports = {
   postController,
   loginController,
@@ -147,4 +267,9 @@ module.exports = {
   getItemImg,
   uploadItem,
   uploadItemImg,
+  getLostItemPost,
+  upDate,
+  getAllItemPost,
+  claimFn,
+  claimerDb
 };
