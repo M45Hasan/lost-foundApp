@@ -6,6 +6,7 @@ const cloudinary = require("../utils/cloudinary");
 const upload = require("../utils/multer");
 const Lostitempost = require("../model/lostPostModel");
 const Itemhelper = require("../model/itmHelperModel");
+const Claim = require("../model/claimModel");
 
 const opts = {
   overwrite: true,
@@ -102,6 +103,91 @@ const getLostItemPost = async (req, res) => {
     res.json({ error: "Not success" });
   }
 };
+const getAllItemPost = async (req, res) => {
+  try {
+    const how = await Lostitempost.find();
+    if (how.length > 0) {
+      res.send(how);
+    } else {
+      res.json({ error: "Ki j hoyce" });
+    }
+  } catch (err) {
+    res.json({ error: "Not success" });
+  }
+};
+///#################  claimer Database start###########
+const claimFn = async (req, res) => {
+  const {
+    claimerName,
+    claimerEmail,
+    claimerURL,
+    claimItemId,
+    category,
+    subcat,
+    finderName,
+    fiderId,
+    fiderURL,
+  } = req.body;
+  const how = await Claim.find({ claimItemId });
+
+  if (!how.length > 0) {
+    const cret = new Claim({
+      claimerName,
+      claimerEmail,
+      claimerURL,
+      claimItemId,
+      category,
+      subcat,
+      finderName,
+      fiderId,
+      fiderURL,
+    });
+
+    cret
+      .save()
+      .then((data) => {
+        res.send(data);
+      })
+      .catch((err) => {
+        res.send(err);
+      });
+  } else {
+    if (how[0].claimerEmail === claimerEmail) {
+      res.json({ error: "Already calimed " });
+    } else {
+      const cret = new Claim({
+        claimerName,
+        claimerEmail,
+        claimerURL,
+        claimItemId,
+        category,
+        subcat,
+        finderName,
+        fiderId,
+        fiderURL,
+      });
+
+      cret
+        .save()
+        .then((data) => {
+          res.send(data);
+        })
+        .catch((err) => {
+          res.send(err);
+        });
+    }
+  }
+};
+
+const claimerDb = async (req, res) => {
+  try {
+    const how = await Claim.find({});
+    res.send(how);
+  } catch (err) {
+    res.send(err);
+  }
+};
+///#################  claimer Database end###########
 //##### get ##############################get end##########
 
 const uploadItem = async (req, res) => {
@@ -183,4 +269,7 @@ module.exports = {
   uploadItemImg,
   getLostItemPost,
   upDate,
+  getAllItemPost,
+  claimFn,
+  claimerDb
 };
