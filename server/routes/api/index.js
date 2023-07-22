@@ -15,7 +15,9 @@ const {
   upDate,
   getAllItemPost,
   claimFn,
-  claimerDb
+  claimerDb,
+  finderTclaimer,
+  pechalData
 } = require("../../controller/regiCon");
 
 _.post("/regi", postController);
@@ -30,6 +32,8 @@ _.post("/userupdate", upDate);
 _.post("/getallpostlist", getAllItemPost);
 _.post("/claim", claimFn);
 _.get("/claimbd", claimerDb);
+_.get("/pechal", pechalData);
+_.post("/finder2claimer", finderTclaimer);
 
 module.exports = _;
  

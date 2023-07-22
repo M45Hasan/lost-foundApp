@@ -34,6 +34,12 @@ const lostItemSchema = new Schema({
   name: {
     type: String,
   },
+  message:[
+    {
+      type: Schema.Types.ObjectId,
+      ref: " chat",
+    },
+  ]
 });
 
 module.exports = mongoose.model("Lostitempost", lostItemSchema);

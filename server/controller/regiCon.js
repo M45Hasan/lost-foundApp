@@ -7,6 +7,7 @@ const upload = require("../utils/multer");
 const Lostitempost = require("../model/lostPostModel");
 const Itemhelper = require("../model/itmHelperModel");
 const Claim = require("../model/claimModel");
+const Chat = require("../model/chatModal");
 
 const opts = {
   overwrite: true,
@@ -259,6 +260,46 @@ const upDate = async (req, res) => {
     res.json({ error: "errro" });
   }
 };
+//############## chatting  start #####
+const finderTclaimer = async (req, res) => {
+  const {
+    postId,
+    finderEmail,
+    finderName,
+    claimerEmail,
+    claimerName,
+    messClaimer,
+    messFinder,
+  } = req.body;
+
+  const cert = new Chat({
+    postId,
+    finderEmail,
+    finderName,
+    claimerEmail,
+    claimerName,
+    messClaimer,
+    messFinder,
+  });
+
+  cert.save();
+  const how = await Lostitempost.findOneAndUpdate(
+    { _id: postId },
+    { $push: { message: cert._id } },
+    { new: true }
+  );
+  res.send(cert.data);
+};
+
+const pechalData = async (req, res) => {
+  try {
+    const how = await Chat.find();
+    res.send(how);
+  } catch (err) {
+    res.send(err);
+  }
+};
+//############## chatting  end #####
 module.exports = {
   postController,
   loginController,
@@ -271,5 +312,7 @@ module.exports = {
   upDate,
   getAllItemPost,
   claimFn,
-  claimerDb
+  claimerDb,
+  finderTclaimer,
+  pechalData
 };

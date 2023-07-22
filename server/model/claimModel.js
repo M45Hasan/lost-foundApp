@@ -10,7 +10,7 @@ const claimSchema = new Schema({
   category: { type: String },
   subcat: { type: String },
   finderName: { type: String },
-  fiderId: { type: String },
+  fiderId: { type: String }, 
   fiderURL: { type: String },
 });
 
