@@ -5,11 +5,16 @@ import { useSelector } from "react-redux";
 export const Card = (dat) => {
   const [slideUrl, setSlideUrl] = useState("");
   const [mesModal, setMesModal] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState("kk");
   const [xOpen, setxOpen] = useState(false);
+
   const [claimer, setClaimer] = useState([]);
   const [postList, setPostList] = useState([]);
   const [update, setUpdate] = useState("");
+  const [chat, setChat] = useState({
+    chat: "",
+  });
+
   let reduxReturnData = useSelector((state) => state);
   //#### slider start #####
   const picClick = (e) => {
@@ -18,21 +23,88 @@ export const Card = (dat) => {
 
   //######## slide end #######
 
-  //###### Modal function start #####
+  //###### chat function start #####
+  const handelChat = (e) => {
+    const { name, value } = e.target;
 
-  //###### Modal function end #####
-  //###### Message function start #####
-  const handelMessSend = (e) => {
-    console.log(e);
+    setChat({ ...chat, [name]: value });
+    console.log(chat);
   };
-  const chatModal = () => {
-    setChatOpen(true);
+  const handleSend = async (e) => {
+    console.log("chatting", e);
+    try {
+      if (reduxReturnData.userStoreData.userInfo.email === e.ndInfo.email) {
+        await axios.post("http://localhost:5000/lostFound/finder2claimer", {
+          postId: e.stInfo.claimItemId,
+          finderName: e.stInfo.finderName,
+          finderEmail: e.ndInfo.email,
+          claimerEmail: e.stInfo.claimerEmail,
+          claimerName: e.stInfo.claimerName,
+          messFinder: chat.chat,
+        });
+      } else if (
+        reduxReturnData.userStoreData.userInfo.email !== e.ndInfo.email
+      ) {
+        await axios.post("http://localhost:5000/lostFound/finder2claimer", {
+          postId: e.stInfo.claimItemId,
+          finderName: e.stInfo.finderName,
+          finderEmail: e.ndInfo.email,
+          claimerEmail: e.stInfo.claimerEmail,
+          claimerName: e.stInfo.claimerName,
+          messClaimer: chat.chat,
+        });
+      }
+    } catch (err) {
+      console.error("error:", err);
+    }
+
+    setTimeout(() => {
+      const pechalData = async () => {
+        try {
+          let how = await axios.get("http://localhost:5000/lostFound/pechal");
+
+          if (how.data.length > 0) {
+            setPechal(how.data);
+          }
+        } catch (err) {
+          console.error("error", err);
+        }
+      };
+      pechalData();
+    }, 1000);
+  };
+  const [pechal, setPechal] = useState("");
+  useEffect(() => {
+    const pechalData = async () => {
+      try {
+        let how = await axios.get("http://localhost:5000/lostFound/pechal");
+
+        if (how.data.length > 0) {
+          setPechal(how.data);
+        }
+      } catch (err) {
+        console.error("error", err);
+      }
+    };
+    pechalData();
+  }, []);
+  console.log("pechalData", pechal);
+  //###### chat function end #####
+  //###### Message function start #####
+
+  const chatModal = (e) => {
+    setChatOpen(e.claimerName);
     setxOpen(true);
   };
-
-  const chatModal2 = () => {
-    console.log("hello");
-    setChatOpen(false);
+  const chatModal2 = (e) => {
+    console.log("message to finder ", e);
+    setChatOpen(e.finderName);
+    setxOpen(true);
+  };
+  const chatModalClose = (e) => {
+    console.log("closeChatMod", e);
+    setChatOpen("ljhhh");
+    setxOpen(false);
   };
   useEffect(() => {
     const updateUser = async () => {
@@ -219,118 +291,169 @@ export const Card = (dat) => {
       </>
 
       {mesModal && (
-        <div className="block w-full absolute p-2 right-0 bg-white border h-full border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+        <div className="block w-full absolute p-2 right-0 bg-white border overflow-y-auto h-full border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
           <h3 className=" text-xl font-bold mb-2 tracking-tight text-gray-900 dark:text-white">
             Message
           </h3>
 
-          <ul>
-            <li>
-              {claimer.map((info, k) =>
-                info.claimItemId == dat.dat._id &&
-                info.claimerEmail ==
-                  reduxReturnData.userStoreData.userInfo.email ? (
-                  <div key={k} className="relative ">
-                    <div
-                      onClick={chatModal}
-                      className="w-[70%] border-1 mt-2 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] "
-                    >
-                      <div className="flex items-center h-[80px] pl-4 space-x-4">
-                        <div className="flex-shrink-0">
-                          <img
-                            className="w-8 h-8 rounded-full"
-                            src={info.fiderURL}
-                            alt="Bonnie image"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                            {info.finderName}
-                          </p>
-                          <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                            "Hey I found this Product"
-                          </p>
-                        </div>
-                      </div>
-                      {chatOpen && (
-                        <div className=" relative">
-                          <div className="z-10 h-[250px] p-4 relative bg-white divide-y divide-gray-100 rounded-lg shadow w-full dark:bg-gray-700 overflow-y-scroll">
-                            <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
-                              Messager massage
-                            </div>
-                            <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
-                              My massage
-                            </div>
-                            <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
-                              Messager massage
-                            </div>
-                            <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
-                              My massage
-                            </div>
-                            <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
-                              Messager massage
-                            </div>
-                            <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
-                              My massage
-                            </div>
-
-                            <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
-                              Messager massage
-                            </div>
-                            <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
-                              My massage
-                            </div>
-                            <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
-                              Messager massage
-                            </div>
-                            <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
-                              My massage
-                            </div>
-                            <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
-                              Messager massage
-                            </div>
-                            <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
-                              My massage
-                            </div>
-                          </div>
-                          <div className="w-full bg-zinc-600 h-[50px]  rounded-md p-1 mr-1">
-                            <input
-                              type="text"
-                              name="chat"
-                              className="w-full h-full rounded-lg pl-2 "
+          <div className="">
+            {claimer.map(
+              (info, k) =>
+                (info.claimItemId === dat.dat._id &&
+                  dat.dat.email ===
+                    reduxReturnData.userStoreData.userInfo.email && (
+                    <div key={k} className="relative ">
+                      <div
+                        onClick={() => chatModal(info)}
+                        className="w-[70%] border-1 mt-2 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] "
+                      >
+                        <div className="flex items-center h-[80px] pl-4 space-x-4">
+                          <div className="flex-shrink-0">
+                            <img
+                              className="w-8 h-8 rounded-full"
+                              src={info.claimerURL}
+                              alt="Bonnie image"
                             />
                           </div>
-
-                          <div className="flex justify-start">
-                            <button
-                              onClick={"chatModal2"}
-                              type=""
-                              className="w-[80%]   h-[30px]  border-t-2 text-blue-700 hover:text-white  border-blue-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm  dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800 "
-                            >
-                              Send{" "}
-                            </button>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              {info.claimerName}
+                            </p>
+                            <p className="text-sm text-gray-500 truncate dark:text-gray-400">
+                              "Hey I claim this Product"
+                            </p>
                           </div>
                         </div>
+                        {chatOpen == info.claimerName && (
+                          <div className=" relative">
+                            <div className="z-10 h-[250px] p-4 relative bg-white divide-y divide-gray-100 rounded-lg shadow w-full dark:bg-gray-700 overflow-y-scroll">
+                              {pechal.map((sms, i) => (
+                                <>
+                                
+                                  <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
+                                    {sms.messClaimer}
+                                  </div>
+                                  
+                                  <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
+                                    {sms.messFinder}
+                                  </div>
+                                </>
+                              ))}
+                            </div>
+                            <div className="w-full bg-zinc-600 h-[50px]  rounded-md p-1 mr-1">
+                              <input
+                                onChange={handelChat}
+                                type="text"
+                                name="chat"
+                                className="w-full h-full rounded-lg pl-2 "
+                              />
+                            </div>
+
+                            <div className="flex justify-start">
+                              <button
+                                onClick={() =>
+                                  handleSend({ stInfo: info, ndInfo: dat.dat })
+                                }
+                                type=""
+                                className="w-[80%]   h-[30px]  border-t-2 text-blue-700 hover:text-white  border-blue-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm  dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800 "
+                              >
+                                Send{" "}
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <>
+                        {xOpen && chatOpen == info.claimerName && (
+                          <button
+                            onClick={() => chatModalClose(info)}
+                            className="w-[105px] absolute right-[232px] z-30 bottom-[1px] h-[30px]  border-t-2 text-red-700 hover:text-white b border-red-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm  dark:border-blue-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800 "
+                          >
+                            X
+                          </button>
+                        )}
+                      </>
+                    </div>
+                  )) ||
+                (info.claimItemId === dat.dat._id &&
+                  info.claimerName ===
+                    reduxReturnData.userStoreData.userInfo.displayName && (
+                    <div key={k} className="relative ">
+                      <div
+                        onClick={() => chatModal2(info)}
+                        className="w-[70%] border-1 mt-2 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] "
+                      >
+                        <div className="flex items-center h-[80px] pl-4 space-x-4">
+                          <div className="flex-shrink-0">
+                            <img
+                              className="w-8 h-8 rounded-full"
+                              src={info.fiderURL}
+                              alt="Bonnie image"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              {info.finderName}
+                            </p>
+                            <p className="text-sm text-gray-500 truncate dark:text-gray-400">
+                              "Hey I find this Product"
+                            </p>
+                          </div>
+                        </div>
+                        {chatOpen === info.finderName && (
+                          <div className=" relative">
+                            <div className="z-10 h-[250px] p-4 relative bg-white divide-y divide-gray-100 rounded-lg shadow w-full dark:bg-gray-700 overflow-y-scroll">
+                            {pechal.map((sms, i) => (
+                                <>
+                                  <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
+                                     {sms.messFinder}
+                                  </div>
+                                  <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
+                                  {sms.messClaimer}
+                                  </div>
+                                </>
+                              ))}
+                            </div>
+                            <div className="w-full bg-zinc-600 h-[50px]  rounded-md p-1 mr-1">
+                              <input
+                                onChange={handelChat}
+                                type="text"
+                                name="chat"
+                                className="w-full h-full rounded-lg pl-2 "
+                              />
+                            </div>
+
+                            <div className="flex justify-start">
+                              <button
+                                onClick={() =>
+                                  handleSend({ stInfo: info, ndInfo: dat.dat })
+                                }
+                                type=""
+                                className="w-[80%]   h-[30px]  border-t-2 text-blue-700 hover:text-white  border-blue-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm  dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800 "
+                              >
+                                Send{" "}
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {xOpen && info.finderName && (
+                        <button
+                          onClick={() => (
+                            setChatOpen(false),
+                            setxOpen(false),
+                            console.log(chatOpen)
+                          )}
+                          className="w-[105px] absolute right-[260px] z-30 bottom-[1px] h-[30px]  border-t-2 text-red-700 hover:text-white b border-red-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm  dark:border-blue-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800 "
+                        >
+                          X
+                        </button>
                       )}
                     </div>
-
-                    {xOpen && (
-                      <button
-                        onClick={() => (
-                          setChatOpen(false),
-                          setxOpen(false),
-                          console.log(chatOpen)
-                        )}
-                        className="w-[105px] absolute right-[260px] z-30 bottom-[1px] h-[30px]  border-t-2 text-red-700 hover:text-white b border-red-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm  dark:border-blue-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800 "
-                      >
-                        X
-                      </button>
-                    )}
-                  </div>
-                ) : null
-              )}
-            </li>
-          </ul>
+                  ))
+            )}
+          </div>
 
           <div className="w-[100%] border-1 mt-1 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
             <div className="flex items-center justify-end h-[40px] pl-1 space-x-4 ">
