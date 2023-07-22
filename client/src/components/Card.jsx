@@ -28,29 +28,28 @@ export const Card = (dat) => {
     const { name, value } = e.target;
 
     setChat({ ...chat, [name]: value });
-    console.log(chat);
   };
   const handleSend = async (e) => {
     console.log("chatting", e);
     try {
-      if (reduxReturnData.userStoreData.userInfo.email === e.ndInfo.email) {
+      if (reduxReturnData.userStoreData.userInfo.email === e.lostPst.email) {
         await axios.post("http://localhost:5000/lostFound/finder2claimer", {
-          postId: e.stInfo.claimItemId,
-          finderName: e.stInfo.finderName,
-          finderEmail: e.ndInfo.email,
-          claimerEmail: e.stInfo.claimerEmail,
-          claimerName: e.stInfo.claimerName,
+          postId: e.claimData.claimItemId,
+          finderName: e.claimData.finderName,
+          finderEmail: e.lostPst.email,
+          claimerEmail: e.claimData.claimerEmail,
+          claimerName: e.claimData.claimerName,
           messFinder: chat.chat,
         });
       } else if (
-        reduxReturnData.userStoreData.userInfo.email !== e.ndInfo.email
+        reduxReturnData.userStoreData.userInfo.email !== e.lostPst.email
       ) {
         await axios.post("http://localhost:5000/lostFound/finder2claimer", {
-          postId: e.stInfo.claimItemId,
-          finderName: e.stInfo.finderName,
-          finderEmail: e.ndInfo.email,
-          claimerEmail: e.stInfo.claimerEmail,
-          claimerName: e.stInfo.claimerName,
+          postId: e.claimData.claimItemId,
+          finderName: e.claimData.finderName,
+          finderEmail: e.lostPst.email,
+          claimerEmail: e.claimData.claimerEmail,
+          claimerName: e.claimData.claimerName,
           messClaimer: chat.chat,
         });
       }
@@ -327,18 +326,23 @@ export const Card = (dat) => {
                         {chatOpen == info.claimerName && (
                           <div className=" relative">
                             <div className="z-10 h-[250px] p-4 relative bg-white divide-y divide-gray-100 rounded-lg shadow w-full dark:bg-gray-700 overflow-y-scroll">
-                              {pechal.map((sms, i) => (
-                                <>
-                                
-                                  <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
-                                    {sms.messClaimer}
-                                  </div>
-                                  
-                                  <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
-                                    {sms.messFinder}
-                                  </div>
-                                </>
-                              ))}
+                              {pechal &&
+                                pechal.map((sms, i) => (
+                                  <>
+                                    {reduxReturnData.userStoreData.userInfo
+                                      .email !== sms.claimerEmail &&
+                                      sms.postId === info.claimItemId &&
+                                      reduxReturnData.userStoreData.userInfo
+                                        .email === sms.finderEmail && (
+                                        <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
+                                          {sms.messClaimer}
+                                        </div>
+                                      )}
+                                    {/* <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
+                                      {sms.messFinder}
+                                    </div> */}
+                                  </>
+                                ))}
                             </div>
                             <div className="w-full bg-zinc-600 h-[50px]  rounded-md p-1 mr-1">
                               <input
@@ -352,7 +356,10 @@ export const Card = (dat) => {
                             <div className="flex justify-start">
                               <button
                                 onClick={() =>
-                                  handleSend({ stInfo: info, ndInfo: dat.dat })
+                                  handleSend({
+                                    claimData: info,
+                                    lostPst: dat.dat,
+                                  })
                                 }
                                 type=""
                                 className="w-[80%]   h-[30px]  border-t-2 text-blue-700 hover:text-white  border-blue-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm  dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800 "
@@ -396,23 +403,46 @@ export const Card = (dat) => {
                               {info.finderName}
                             </p>
                             <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                              "Hey I find this Product"
+                              "Hey I find this {dat.dat.subcat}"
                             </p>
                           </div>
                         </div>
                         {chatOpen === info.finderName && (
-                          <div className=" relative">
+                          <div key={k} className=" relative">
                             <div className="z-10 h-[250px] p-4 relative bg-white divide-y divide-gray-100 rounded-lg shadow w-full dark:bg-gray-700 overflow-y-scroll">
-                            {pechal.map((sms, i) => (
-                                <>
-                                  <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
-                                     {sms.messFinder}
-                                  </div>
-                                  <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
-                                  {sms.messClaimer}
-                                  </div>
-                                </>
-                              ))}
+                              {pechal &&
+                                pechal.map((sms) => (
+                                  <>
+                                    {reduxReturnData.userStoreData.userInfo
+                                      .email !== sms.finderEmail &&
+                                      sms.postId === info.claimItemId &&
+                                      reduxReturnData.userStoreData.userInfo
+                                        .email === sms.claimerEmail && (
+                                        <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
+                                          {sms.messFinder}
+                                        </div>
+                                      )}
+                                    {reduxReturnData.userStoreData.userInfo
+                                      .email !== sms.claimerEmail &&
+                                      sms.postId === info.claimItemId &&
+                                      reduxReturnData.userStoreData.userInfo
+                                        .email === sms.finderEmail && (
+                                        <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
+                                          {sms.messClaimer}
+                                        </div>
+                                      )}
+
+                                    {/* { reduxReturnData.userStoreData.userInfo
+                                      .email !== sms.claimerEmail &&
+                                       sms.postId === dat.dat._id &&
+                                      reduxReturnData.userStoreData.userInfo
+                                        .email === sms.finderEmail &&   (
+                                      <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
+                                        {sms.messFinder}
+                                      </div>
+                                    ) } */}
+                                  </>
+                                ))}
                             </div>
                             <div className="w-full bg-zinc-600 h-[50px]  rounded-md p-1 mr-1">
                               <input
@@ -426,7 +456,10 @@ export const Card = (dat) => {
                             <div className="flex justify-start">
                               <button
                                 onClick={() =>
-                                  handleSend({ stInfo: info, ndInfo: dat.dat })
+                                  handleSend({
+                                    claimData: info,
+                                    lostPst: dat.dat,
+                                  })
                                 }
                                 type=""
                                 className="w-[80%]   h-[30px]  border-t-2 text-blue-700 hover:text-white  border-blue-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm  dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800 "
