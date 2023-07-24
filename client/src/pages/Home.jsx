@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import axios from "axios";
 import Card from "../components/Card";
-import { activeUser } from "../slice/UserSlice";
-import { activePic } from "../slice/picSlice";
+
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
