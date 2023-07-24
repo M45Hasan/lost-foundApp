@@ -16,8 +16,11 @@ const {
   getAllItemPost,
   claimFn,
   claimerDb,
-  finderTclaimer,
-  pechalData
+  claimerChat,
+  finderChat,
+  pechalClaim,
+  pechalFinder,
+  messageFun,
 } = require("../../controller/regiCon");
 
 _.post("/regi", postController);
@@ -32,8 +35,10 @@ _.post("/userupdate", upDate);
 _.post("/getallpostlist", getAllItemPost);
 _.post("/claim", claimFn);
 _.get("/claimbd", claimerDb);
-_.get("/pechal", pechalData);
-_.post("/finder2claimer", finderTclaimer);
+_.get("/pechalfinder", pechalFinder);
+_.get("/message", messageFun);
+_.get("/pechalclaimer", pechalClaim);
+_.post("/finder2claimer", finderChat);
+_.post("/claimer2finder", claimerChat);
 
 module.exports = _;
- 

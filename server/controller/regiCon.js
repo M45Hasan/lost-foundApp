@@ -7,7 +7,10 @@ const upload = require("../utils/multer");
 const Lostitempost = require("../model/lostPostModel");
 const Itemhelper = require("../model/itmHelperModel");
 const Claim = require("../model/claimModel");
-const Chat = require("../model/chatModal");
+// const Chat = require("../model/chatModal");
+const Chatclaimer = require("../model/chatClaimerModal");
+
+const Chatfinder = require("../model/chatFinderSchema");
 
 const opts = {
   overwrite: true,
@@ -261,7 +264,37 @@ const upDate = async (req, res) => {
   }
 };
 //############## chatting  start #####
-const finderTclaimer = async (req, res) => {
+// const finderTclaimer = async (req, res) => {
+//   const {
+//     postId,
+//     finderEmail,
+//     finderName,
+//     claimerEmail,
+//     claimerName,
+//     messClaimer,
+//     messFinder,
+//   } = req.body;
+
+//   const cert = new Chat({
+//     postId,
+//     finderEmail,
+//     finderName,
+//     claimerEmail,
+//     claimerName,
+//     messClaimer,
+//     messFinder,
+//   });
+
+//   cert.save();
+//   const how = await Lostitempost.findOneAndUpdate(
+//     { _id: postId },
+//     { $push: { message: cert._id } },
+//     { new: true }
+//   );
+//   res.send(cert.data);
+// };
+
+const claimerChat = async (req, res) => {
   const {
     postId,
     finderEmail,
@@ -269,16 +302,41 @@ const finderTclaimer = async (req, res) => {
     claimerEmail,
     claimerName,
     messClaimer,
-    messFinder,
   } = req.body;
 
-  const cert = new Chat({
+  const cert = new Chatclaimer({
     postId,
     finderEmail,
     finderName,
     claimerEmail,
     claimerName,
     messClaimer,
+  });
+
+  cert.save();
+  const how = await Lostitempost.findOneAndUpdate(
+    { _id: postId },
+    { $push: { message: cert._id } },
+    { new: true }
+  );
+  res.send(cert.data);
+};
+const finderChat = async (req, res) => {
+  const {
+    postId,
+    finderEmail,
+    finderName,
+    claimerEmail,
+    claimerName,
+    messFinder,
+  } = req.body;
+
+  const cert = new Chatfinder({
+    postId,
+    finderEmail,
+    finderName,
+    claimerEmail,
+    claimerName,
     messFinder,
   });
 
@@ -291,9 +349,35 @@ const finderTclaimer = async (req, res) => {
   res.send(cert.data);
 };
 
-const pechalData = async (req, res) => {
+// const pechalData = async (req, res) => {
+//   try {
+//     const how = await Chat.find();
+//     res.send(how);
+//   } catch (err) {
+//     res.send(err);
+//   }
+// };
+
+const pechalClaim = async (req, res) => {
   try {
-    const how = await Chat.find();
+    const how = await Chatclaimer.find();
+    res.send(how);
+  } catch (err) {
+    res.send(err);
+  }
+};
+const pechalFinder = async (req, res) => {
+  try {
+    const how = await Chatfinder.find();
+    res.send(how);
+  } catch (err) {
+    res.send(err);
+  }
+};
+
+const messageFun = async (req, res) => {
+  try {
+    const how = await Lostitempost.find().populate("message");
     res.send(how);
   } catch (err) {
     res.send(err);
@@ -313,6 +397,9 @@ module.exports = {
   getAllItemPost,
   claimFn,
   claimerDb,
-  finderTclaimer,
-  pechalData
+  claimerChat,
+  finderChat,
+  pechalClaim,
+  pechalFinder,
+  messageFun,
 };

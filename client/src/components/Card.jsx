@@ -11,9 +11,14 @@ export const Card = (dat) => {
   const [claimer, setClaimer] = useState([]);
   const [postList, setPostList] = useState([]);
   const [update, setUpdate] = useState("");
+  const [pechalf, setPechalf] = useState("");
+  const [pechalc, setPechalc] = useState("");
+  const [pechal, setPechal] = useState("");
   const [chat, setChat] = useState({
     chat: "",
   });
+
+
 
   let reduxReturnData = useSelector((state) => state);
   //#### slider start #####
@@ -31,8 +36,11 @@ export const Card = (dat) => {
   };
   const handleSend = async (e) => {
     console.log("chatting", e);
+
+    console.log("message:", chat.chat);
     try {
       if (reduxReturnData.userStoreData.userInfo.email === e.lostPst.email) {
+        console.log("message:", chat.chat);
         await axios.post("http://localhost:5000/lostFound/finder2claimer", {
           postId: e.claimData.claimItemId,
           finderName: e.claimData.finderName,
@@ -44,7 +52,8 @@ export const Card = (dat) => {
       } else if (
         reduxReturnData.userStoreData.userInfo.email !== e.lostPst.email
       ) {
-        await axios.post("http://localhost:5000/lostFound/finder2claimer", {
+        console.log("message:", chat.chat);
+        await axios.post("http://localhost:5000/lostFound/claimer2finder", {
           postId: e.claimData.claimItemId,
           finderName: e.claimData.finderName,
           finderEmail: e.lostPst.email,
@@ -58,36 +67,72 @@ export const Card = (dat) => {
     }
 
     setTimeout(() => {
-      const pechalData = async () => {
+      const pechalFinder = async () => {
         try {
-          let how = await axios.get("http://localhost:5000/lostFound/pechal");
+          let how = await axios.get(
+            "http://localhost:5000/lostFound/pechalfinder"
+          );
 
           if (how.data.length > 0) {
-            setPechal(how.data);
+            setPechalf(how.data);
           }
         } catch (err) {
           console.error("error", err);
         }
       };
-      pechalData();
+      const pechalClaimer = async () => {
+        try {
+          let how = await axios.get(
+            "http://localhost:5000/lostFound/pechalclaimer"
+          );
+
+          if (how.data.length > 0) {
+            setPechalc(how.data);
+          }
+        } catch (err) {
+          console.error("error", err);
+        }
+      };
+      pechalFinder();
+      pechalClaimer();
     }, 1000);
   };
-  const [pechal, setPechal] = useState("");
+
   useEffect(() => {
-    const pechalData = async () => {
+    const pechalClaimer = async () => {
       try {
-        let how = await axios.get("http://localhost:5000/lostFound/pechal");
+        let how = await axios.get(
+          "http://localhost:5000/lostFound/pechalclaimer"
+        );
 
         if (how.data.length > 0) {
-          setPechal(how.data);
+          setPechalc(how.data);
         }
       } catch (err) {
         console.error("error", err);
       }
     };
-    pechalData();
+
+    pechalClaimer();
   }, []);
-  console.log("pechalData", pechal);
+  useEffect(() => {
+    const pechalFinder = async () => {
+      try {
+        let how = await axios.get(
+          "http://localhost:5000/lostFound/pechalfinder"
+        );
+
+        if (how.data.length > 0) {
+          setPechalf(how.data);
+        }
+      } catch (err) {
+        console.error("error", err);
+      }
+    };
+    pechalFinder();
+  }, []);
+  console.log("pechalFinder", pechalf);
+  console.log("pechalClaimer", pechalc);
   //###### chat function end #####
   //###### Message function start #####
 
@@ -180,7 +225,26 @@ export const Card = (dat) => {
   console.log("claimer", claimer);
   console.log("allPostList", postList);
 
+  
+
   //###### Claimer function end #####
+    //########################### all chat collection start####
+
+    useEffect(() => {
+      const allData = async () => {
+        try {
+          const how = await axios.get("http://localhost:5000/lostFound/message");
+          if (how.data.length > 0) {
+            setPechal(how);
+          }
+        } catch (err) {
+          console.error("error:", err);
+        }
+      };
+      allData();
+    }, []);
+    console.log("allMess", pechal);
+    //########################### all chat collection end####
   return (
     <div className=" mx-auto bg-white rounded-xl shadow-md overflow-hidden mt-10 h-[500px] relative md:max-w-[850px] flex  ">
       <>
@@ -326,21 +390,36 @@ export const Card = (dat) => {
                         {chatOpen == info.claimerName && (
                           <div className=" relative">
                             <div className="z-10 h-[250px] p-4 relative bg-white divide-y divide-gray-100 rounded-lg shadow w-full dark:bg-gray-700 overflow-y-scroll">
-                              {pechal &&
-                                pechal.map((sms, i) => (
+                              {pechalc &&
+                                pechalc.map((cms, k) => (
                                   <>
-                                    {reduxReturnData.userStoreData.userInfo
-                                      .email !== sms.claimerEmail &&
-                                      sms.postId === info.claimItemId &&
+                                    {cms.postId === dat.dat._id &&
                                       reduxReturnData.userStoreData.userInfo
-                                        .email === sms.finderEmail && (
-                                        <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
-                                          {sms.messClaimer}
-                                        </div>
+                                        .email !== cms.claimerEmail &&
+                                      reduxReturnData.userStoreData.userInfo
+                                        .email === cms.finderEmail && (
+                                        <>
+                                          <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
+                                            {cms.messClaimer}
+                                          </div>
+                                        </>
                                       )}
-                                    {/* <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
-                                      {sms.messFinder}
-                                    </div> */}
+                                  </>
+                                ))}
+                              {pechalf &&
+                                pechalf.map((fms) => (
+                                  <>
+                                    {fms.postId === dat.dat._id &&
+                                      reduxReturnData.userStoreData.userInfo
+                                        .email !== fms.finderEmail &&
+                                      reduxReturnData.userStoreData.userInfo
+                                        .email === fms.claimerEmail && (
+                                        <>
+                                          <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
+                                            {fms.messFinder}
+                                          </div>
+                                        </>
+                                      )}
                                   </>
                                 ))}
                             </div>
@@ -410,37 +489,38 @@ export const Card = (dat) => {
                         {chatOpen === info.finderName && (
                           <div key={k} className=" relative">
                             <div className="z-10 h-[250px] p-4 relative bg-white divide-y divide-gray-100 rounded-lg shadow w-full dark:bg-gray-700 overflow-y-scroll">
-                              {pechal &&
-                                pechal.map((sms) => (
+                              {pechalf &&
+                                pechalf.map((fms) => (
                                   <>
-                                    {reduxReturnData.userStoreData.userInfo
-                                      .email !== sms.finderEmail &&
-                                      sms.postId === info.claimItemId &&
+                                    {fms.postId === dat.dat._id &&
                                       reduxReturnData.userStoreData.userInfo
-                                        .email === sms.claimerEmail && (
-                                        <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
-                                          {sms.messFinder}
-                                        </div>
-                                      )}
-                                    {reduxReturnData.userStoreData.userInfo
-                                      .email !== sms.claimerEmail &&
-                                      sms.postId === info.claimItemId &&
+                                        .email !== fms.finderEmail &&
                                       reduxReturnData.userStoreData.userInfo
-                                        .email === sms.finderEmail && (
-                                        <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
-                                          {sms.messClaimer}
-                                        </div>
+                                        .email === fms.claimerEmail && (
+                                        <>
+                                          <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
+                                            {fms.messFinder}
+                                          </div>
+                                        </>
                                       )}
+                                  </>
+                                ))}
 
-                                    {/* { reduxReturnData.userStoreData.userInfo
-                                      .email !== sms.claimerEmail &&
-                                       sms.postId === dat.dat._id &&
+                              {pechalc &&
+                                pechalc.map((cms) => (
+                                  <>
+                                    {console.log(cms.messClaimer)}
+                                    {cms.postId === dat.dat._id &&
                                       reduxReturnData.userStoreData.userInfo
-                                        .email === sms.finderEmail &&   (
-                                      <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
-                                        {sms.messFinder}
-                                      </div>
-                                    ) } */}
+                                        .email !== cms.claimerEmail &&
+                                      reduxReturnData.userStoreData.userInfo
+                                        .email === cms.finderEmail && (
+                                        <>
+                                          <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
+                                            {cms.messClaimer}
+                                          </div>
+                                        </>
+                                      )}
                                   </>
                                 ))}
                             </div>
