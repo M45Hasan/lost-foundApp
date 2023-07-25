@@ -7,10 +7,7 @@ const upload = require("../utils/multer");
 const Lostitempost = require("../model/lostPostModel");
 const Itemhelper = require("../model/itmHelperModel");
 const Claim = require("../model/claimModel");
-// const Chat = require("../model/chatModal");
-const Chatclaimer = require("../model/chatClaimerModal");
-
-const Chatfinder = require("../model/chatFinderSchema");
+const Chat = require("../model/chatModal");
 
 const opts = {
   overwrite: true,
@@ -132,9 +129,10 @@ const claimFn = async (req, res) => {
     fiderId,
     fiderURL,
   } = req.body;
-  const how = await Claim.find({ claimItemId });
 
-  if (!how.length > 0) {
+  const low = await Claim.find({ claimItemId, claimerEmail });
+
+  if (low.length < 1) {
     const cret = new Claim({
       claimerName,
       claimerEmail,
@@ -156,30 +154,7 @@ const claimFn = async (req, res) => {
         res.send(err);
       });
   } else {
-    if (how[0].claimerEmail === claimerEmail) {
-      res.json({ error: "Already calimed " });
-    } else {
-      const cret = new Claim({
-        claimerName,
-        claimerEmail,
-        claimerURL,
-        claimItemId,
-        category,
-        subcat,
-        finderName,
-        fiderId,
-        fiderURL,
-      });
-
-      cret
-        .save()
-        .then((data) => {
-          res.send(data);
-        })
-        .catch((err) => {
-          res.send(err);
-        });
-    }
+    res.json({ error: "Already calimed " });
   }
 };
 
@@ -264,37 +239,7 @@ const upDate = async (req, res) => {
   }
 };
 //############## chatting  start #####
-// const finderTclaimer = async (req, res) => {
-//   const {
-//     postId,
-//     finderEmail,
-//     finderName,
-//     claimerEmail,
-//     claimerName,
-//     messClaimer,
-//     messFinder,
-//   } = req.body;
-
-//   const cert = new Chat({
-//     postId,
-//     finderEmail,
-//     finderName,
-//     claimerEmail,
-//     claimerName,
-//     messClaimer,
-//     messFinder,
-//   });
-
-//   cert.save();
-//   const how = await Lostitempost.findOneAndUpdate(
-//     { _id: postId },
-//     { $push: { message: cert._id } },
-//     { new: true }
-//   );
-//   res.send(cert.data);
-// };
-
-const claimerChat = async (req, res) => {
+const messagePost = async (req, res) => {
   const {
     postId,
     finderEmail,
@@ -302,41 +247,16 @@ const claimerChat = async (req, res) => {
     claimerEmail,
     claimerName,
     messClaimer,
-  } = req.body;
-
-  const cert = new Chatclaimer({
-    postId,
-    finderEmail,
-    finderName,
-    claimerEmail,
-    claimerName,
-    messClaimer,
-  });
-
-  cert.save();
-  const how = await Lostitempost.findOneAndUpdate(
-    { _id: postId },
-    { $push: { message: cert._id } },
-    { new: true }
-  );
-  res.send(cert.data);
-};
-const finderChat = async (req, res) => {
-  const {
-    postId,
-    finderEmail,
-    finderName,
-    claimerEmail,
-    claimerName,
     messFinder,
   } = req.body;
 
-  const cert = new Chatfinder({
+  const cert = new Chat({
     postId,
     finderEmail,
     finderName,
     claimerEmail,
     claimerName,
+    messClaimer,
     messFinder,
   });
 
@@ -346,44 +266,26 @@ const finderChat = async (req, res) => {
     { $push: { message: cert._id } },
     { new: true }
   );
-  res.send(cert.data);
+  const low = await Chat.findOneAndUpdate(
+    { _id: cert._id },
+    { $set: { id: how._id } },
+    { new: true }
+  );
+  res.send(low);
 };
 
-// const pechalData = async (req, res) => {
-//   try {
-//     const how = await Chat.find();
-//     res.send(how);
-//   } catch (err) {
-//     res.send(err);
-//   }
-// };
-
-const pechalClaim = async (req, res) => {
-  try {
-    const how = await Chatclaimer.find();
-    res.send(how);
-  } catch (err) {
-    res.send(err);
-  }
-};
-const pechalFinder = async (req, res) => {
-  try {
-    const how = await Chatfinder.find();
-    res.send(how);
-  } catch (err) {
-    res.send(err);
-  }
-};
-
-const messageFun = async (req, res) => {
-  try {
-    const how = await Lostitempost.find().populate("message");
-    res.send(how);
-  } catch (err) {
-    res.send(err);
-  }
+const messageGet = async (req, res) => {
+  const how = await Chat.find();
+  res.send(how);
 };
 //############## chatting  end #####
+//############ claimer button start ######
+const claimerButton = async (req, res) => {
+  const { claimItemId } = req.body;
+  const how = await Claim.find({ claimItemId });
+  res.send(how);
+};
+//############ claimer button end ######
 module.exports = {
   postController,
   loginController,
@@ -397,9 +299,7 @@ module.exports = {
   getAllItemPost,
   claimFn,
   claimerDb,
-  claimerChat,
-  finderChat,
-  pechalClaim,
-  pechalFinder,
-  messageFun,
+  messagePost,
+  messageGet,
+  claimerButton,
 };

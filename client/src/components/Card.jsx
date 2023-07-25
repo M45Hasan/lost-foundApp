@@ -5,20 +5,19 @@ import { useSelector } from "react-redux";
 export const Card = (dat) => {
   const [slideUrl, setSlideUrl] = useState("");
   const [mesModal, setMesModal] = useState(false);
+  const [mesModalClaimer, setModalClaimer] = useState(false);
   const [chatOpen, setChatOpen] = useState("kk");
+  const [chatToClaimerOpen, setChattoClaimerOpen] = useState("kk");
   const [xOpen, setxOpen] = useState(false);
-
+  const [buttonClaimer, setButtonClaimer] = useState("");
   const [claimer, setClaimer] = useState([]);
   const [postList, setPostList] = useState([]);
   const [update, setUpdate] = useState("");
-  const [pechalf, setPechalf] = useState("");
-  const [pechalc, setPechalc] = useState("");
-  const [pechal, setPechal] = useState("");
+  const [message, setMessagge] = useState("");
+
   const [chat, setChat] = useState({
     chat: "",
   });
-
-
 
   let reduxReturnData = useSelector((state) => state);
   //#### slider start #####
@@ -29,6 +28,7 @@ export const Card = (dat) => {
   //######## slide end #######
 
   //###### chat function start #####
+  //####### send sms start axios ########
   const handelChat = (e) => {
     const { name, value } = e.target;
 
@@ -37,29 +37,28 @@ export const Card = (dat) => {
   const handleSend = async (e) => {
     console.log("chatting", e);
 
-    console.log("message:", chat.chat);
     try {
-      if (reduxReturnData.userStoreData.userInfo.email === e.lostPst.email) {
-        console.log("message:", chat.chat);
-        await axios.post("http://localhost:5000/lostFound/finder2claimer", {
-          postId: e.claimData.claimItemId,
-          finderName: e.claimData.finderName,
-          finderEmail: e.lostPst.email,
-          claimerEmail: e.claimData.claimerEmail,
-          claimerName: e.claimData.claimerName,
-          messFinder: chat.chat,
-        });
-      } else if (
+      if (
+        reduxReturnData.userStoreData.userInfo.email ===
+          e.claimData.claimerEmail &&
         reduxReturnData.userStoreData.userInfo.email !== e.lostPst.email
       ) {
-        console.log("message:", chat.chat);
-        await axios.post("http://localhost:5000/lostFound/claimer2finder", {
-          postId: e.claimData.claimItemId,
-          finderName: e.claimData.finderName,
+        await axios.post("http://localhost:5000/lostFound/messagepost", {
+          postId: e.lostPst._id,
           finderEmail: e.lostPst.email,
-          claimerEmail: e.claimData.claimerEmail,
-          claimerName: e.claimData.claimerName,
+          finderName: e.lostPst.name,
+          claimerEmail: reduxReturnData.userStoreData.userInfo.email,
+          claimerName: reduxReturnData.userStoreData.userInfo.displayName,
           messClaimer: chat.chat,
+        });
+      } else {
+        await axios.post("http://localhost:5000/lostFound/messagepost", {
+          postId: e.lostPst._id,
+          finderEmail: reduxReturnData.userStoreData.userInfo.email,
+          finderName: reduxReturnData.userStoreData.userInfo.displayName,
+          claimerEmail: e.claimData.claimerEmai,
+          claimerName: e.claimData.claimerName,
+          messFinder: chat.chat,
         });
       }
     } catch (err) {
@@ -67,77 +66,37 @@ export const Card = (dat) => {
     }
 
     setTimeout(() => {
-      const pechalFinder = async () => {
-        try {
-          let how = await axios.get(
-            "http://localhost:5000/lostFound/pechalfinder"
-          );
+      const data = async () => {
+        const how = await axios.get(
+          "http://localhost:5000/lostFound/messageget"
+        );
 
-          if (how.data.length > 0) {
-            setPechalf(how.data);
-          }
-        } catch (err) {
-          console.error("error", err);
+        if (how.data.length > 0) {
+          setMessagge(how.data);
         }
       };
-      const pechalClaimer = async () => {
-        try {
-          let how = await axios.get(
-            "http://localhost:5000/lostFound/pechalclaimer"
-          );
-
-          if (how.data.length > 0) {
-            setPechalc(how.data);
-          }
-        } catch (err) {
-          console.error("error", err);
-        }
-      };
-      pechalFinder();
-      pechalClaimer();
-    }, 1000);
+      data();
+    }, 500);
   };
+  console.log(message);
 
   useEffect(() => {
-    const pechalClaimer = async () => {
-      try {
-        let how = await axios.get(
-          "http://localhost:5000/lostFound/pechalclaimer"
-        );
+    const data = async () => {
+      const how = await axios.get("http://localhost:5000/lostFound/messageget");
 
-        if (how.data.length > 0) {
-          setPechalc(how.data);
-        }
-      } catch (err) {
-        console.error("error", err);
+      if (how.data.length > 0) {
+        setMessagge(how.data);
       }
     };
-
-    pechalClaimer();
+    data();
   }, []);
-  useEffect(() => {
-    const pechalFinder = async () => {
-      try {
-        let how = await axios.get(
-          "http://localhost:5000/lostFound/pechalfinder"
-        );
+  //####### send sms start ########
 
-        if (how.data.length > 0) {
-          setPechalf(how.data);
-        }
-      } catch (err) {
-        console.error("error", err);
-      }
-    };
-    pechalFinder();
-  }, []);
-  console.log("pechalFinder", pechalf);
-  console.log("pechalClaimer", pechalc);
   //###### chat function end #####
   //###### Message function start #####
 
-  const chatModal = (e) => {
-    setChatOpen(e.claimerName);
+  const chatToClaimerModal = (e) => {
+    setChattoClaimerOpen(e.claimerEmail);
     setxOpen(true);
   };
   const chatModal2 = (e) => {
@@ -147,7 +106,7 @@ export const Card = (dat) => {
   };
   const chatModalClose = (e) => {
     console.log("closeChatMod", e);
-    setChatOpen("ljhhh");
+    setChattoClaimerOpen("ljhhh");
     setxOpen(false);
   };
   useEffect(() => {
@@ -171,11 +130,26 @@ export const Card = (dat) => {
   //###### Message function end #####
 
   //###### Claimer function start #####
+
   const claimeRFun = async (e) => {
     console.log(e);
-
-    setMesModal(true);
+    try {
+      const how = await axios
+        .post("http://localhost:5000/lostFound/claimerbuttonpost", {
+          claimItemId: e._id,
+        })
+        .then((result) => {
+          if (result.data.length > 0) {
+            setButtonClaimer(result.data);
+          }
+        });
+    } catch (err) {
+      console.error("Error", err);
+    }
+    setModalClaimer(true);
   };
+
+  console.log("buttonClaimer", buttonClaimer);
   const claimeTFun = async (e) => {
     console.log("iteminfo:", e);
     try {
@@ -225,26 +199,10 @@ export const Card = (dat) => {
   console.log("claimer", claimer);
   console.log("allPostList", postList);
 
-  
-
   //###### Claimer function end #####
-    //########################### all chat collection start####
+  //########################### all chat collection start####
 
-    useEffect(() => {
-      const allData = async () => {
-        try {
-          const how = await axios.get("http://localhost:5000/lostFound/message");
-          if (how.data.length > 0) {
-            setPechal(how);
-          }
-        } catch (err) {
-          console.error("error:", err);
-        }
-      };
-      allData();
-    }, []);
-    console.log("allMess", pechal);
-    //########################### all chat collection end####
+  //########################### all chat collection end####
   return (
     <div className=" mx-auto bg-white rounded-xl shadow-md overflow-hidden mt-10 h-[500px] relative md:max-w-[850px] flex  ">
       <>
@@ -360,109 +318,13 @@ export const Card = (dat) => {
           </h3>
 
           <div className="">
-            {claimer.map(
-              (info, k) =>
-                (info.claimItemId === dat.dat._id &&
-                  dat.dat.email ===
-                    reduxReturnData.userStoreData.userInfo.email && (
-                    <div key={k} className="relative ">
-                      <div
-                        onClick={() => chatModal(info)}
-                        className="w-[70%] border-1 mt-2 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] "
-                      >
-                        <div className="flex items-center h-[80px] pl-4 space-x-4">
-                          <div className="flex-shrink-0">
-                            <img
-                              className="w-8 h-8 rounded-full"
-                              src={info.claimerURL}
-                              alt="Bonnie image"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                              {info.claimerName}
-                            </p>
-                            <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                              "Hey I claim this Product"
-                            </p>
-                          </div>
-                        </div>
-                        {chatOpen == info.claimerName && (
-                          <div className=" relative">
-                            <div className="z-10 h-[250px] p-4 relative bg-white divide-y divide-gray-100 rounded-lg shadow w-full dark:bg-gray-700 overflow-y-scroll">
-                              {pechalc &&
-                                pechalc.map((cms, k) => (
-                                  <>
-                                    {cms.postId === dat.dat._id &&
-                                      reduxReturnData.userStoreData.userInfo
-                                        .email !== cms.claimerEmail &&
-                                      reduxReturnData.userStoreData.userInfo
-                                        .email === cms.finderEmail && (
-                                        <>
-                                          <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
-                                            {cms.messClaimer}
-                                          </div>
-                                        </>
-                                      )}
-                                  </>
-                                ))}
-                              {pechalf &&
-                                pechalf.map((fms) => (
-                                  <>
-                                    {fms.postId === dat.dat._id &&
-                                      reduxReturnData.userStoreData.userInfo
-                                        .email !== fms.finderEmail &&
-                                      reduxReturnData.userStoreData.userInfo
-                                        .email === fms.claimerEmail && (
-                                        <>
-                                          <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
-                                            {fms.messFinder}
-                                          </div>
-                                        </>
-                                      )}
-                                  </>
-                                ))}
-                            </div>
-                            <div className="w-full bg-zinc-600 h-[50px]  rounded-md p-1 mr-1">
-                              <input
-                                onChange={handelChat}
-                                type="text"
-                                name="chat"
-                                className="w-full h-full rounded-lg pl-2 "
-                              />
-                            </div>
-
-                            <div className="flex justify-start">
-                              <button
-                                onClick={() =>
-                                  handleSend({
-                                    claimData: info,
-                                    lostPst: dat.dat,
-                                  })
-                                }
-                                type=""
-                                className="w-[80%]   h-[30px]  border-t-2 text-blue-700 hover:text-white  border-blue-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm  dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800 "
-                              >
-                                Send{" "}
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                      <>
-                        {xOpen && chatOpen == info.claimerName && (
-                          <button
-                            onClick={() => chatModalClose(info)}
-                            className="w-[105px] absolute right-[232px] z-30 bottom-[1px] h-[30px]  border-t-2 text-red-700 hover:text-white b border-red-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm  dark:border-blue-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800 "
-                          >
-                            X
-                          </button>
-                        )}
-                      </>
-                    </div>
-                  )) ||
-                (info.claimItemId === dat.dat._id &&
+            {claimer &&
+              claimer.map(
+                (info, k) =>
+                  info.claimItemId === dat.dat._id &&
                   info.claimerName ===
+                    reduxReturnData.userStoreData.userInfo.displayName &&
+                  info.finderName !==
                     reduxReturnData.userStoreData.userInfo.displayName && (
                     <div key={k} className="relative ">
                       <div
@@ -488,42 +350,34 @@ export const Card = (dat) => {
                         </div>
                         {chatOpen === info.finderName && (
                           <div key={k} className=" relative">
-                            <div className="z-10 h-[250px] p-4 relative bg-white divide-y divide-gray-100 rounded-lg shadow w-full dark:bg-gray-700 overflow-y-scroll">
-                              {pechalf &&
-                                pechalf.map((fms) => (
-                                  <>
-                                    {fms.postId === dat.dat._id &&
-                                      reduxReturnData.userStoreData.userInfo
-                                        .email !== fms.finderEmail &&
-                                      reduxReturnData.userStoreData.userInfo
-                                        .email === fms.claimerEmail && (
+                            <div className="z-10 h-[200px] p-4 relative bg-white divide-y divide-gray-100 rounded-lg shadow w-full dark:bg-gray-700 overflow-y-scroll">
+                              {message &&
+                                message.map(
+                                  (sms, i) =>
+                                    (info.claimItemId === sms.id &&
+                                      sms.claimerEmail ===
+                                        reduxReturnData.userStoreData.userInfo
+                                          .email &&
+                                      sms.finderEmail === info.finderEmail) ||
+                                    (info.claimItemId === sms.id &&
+                                      sms.id === dat.dat._id &&
+                                      sms.finderEmail === dat.dat.email && (
                                         <>
-                                          <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
-                                            {fms.messFinder}
-                                          </div>
+                                          {sms.messClaimer && (
+                                            <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
+                                              {sms.messClaimer}
+                                            </div>
+                                          )}
+                                          {sms.messFinder && (
+                                            <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
+                                              {sms.messFinder}
+                                            </div>
+                                          )}
                                         </>
-                                      )}
-                                  </>
-                                ))}
-
-                              {pechalc &&
-                                pechalc.map((cms) => (
-                                  <>
-                                    {console.log(cms.messClaimer)}
-                                    {cms.postId === dat.dat._id &&
-                                      reduxReturnData.userStoreData.userInfo
-                                        .email !== cms.claimerEmail &&
-                                      reduxReturnData.userStoreData.userInfo
-                                        .email === cms.finderEmail && (
-                                        <>
-                                          <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
-                                            {cms.messClaimer}
-                                          </div>
-                                        </>
-                                      )}
-                                  </>
-                                ))}
+                                      ))
+                                )}
                             </div>
+
                             <div className="w-full bg-zinc-600 h-[50px]  rounded-md p-1 mr-1">
                               <input
                                 onChange={handelChat}
@@ -564,8 +418,8 @@ export const Card = (dat) => {
                         </button>
                       )}
                     </div>
-                  ))
-            )}
+                  )
+              )}
           </div>
 
           <div className="w-[100%] border-1 mt-1 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
@@ -573,6 +427,132 @@ export const Card = (dat) => {
               <button
                 onClick={() => (
                   setMesModal(false), setChatOpen(false), setxOpen(false)
+                )}
+                type="button"
+                className="text-red-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-2 mb-2 dark:border-blue-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-500 dark:focus:ring-blue-800"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {mesModalClaimer && (
+        <div className="block w-full absolute p-2 right-0 bg-white border overflow-y-auto h-full border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+          <h3 className=" text-xl font-bold mb-2 tracking-tight text-gray-900 dark:text-white">
+            Message
+          </h3>
+
+          <div className="">
+            {buttonClaimer &&
+              buttonClaimer.map(
+                (info, k) =>
+                  info.claimItemId === dat.dat._id &&
+                  dat.dat.email ===
+                    reduxReturnData.userStoreData.userInfo.email && (
+                    <div key={k} className="relative ">
+                      <div
+                        onClick={() => chatToClaimerModal(info)}
+                        className="w-[70%] border-1 mt-2 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] "
+                      >
+                        <div className="flex items-center h-[80px] pl-4 space-x-4">
+                          <div className="flex-shrink-0">
+                            <img
+                              className="w-8 h-8 rounded-full"
+                              src={info.claimerURL}
+                              alt="Bonnie image"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              {info.claimerName}
+                            </p>
+                            <p className="text-sm text-gray-500 truncate dark:text-gray-400">
+                              "Hey I claim this {dat.dat.category}"
+                            </p>
+                          </div>
+                        </div>
+                        {chatToClaimerOpen == info.claimerEmail && (
+                          <div className=" relative">
+                            <div className="z-10 h-[250px] p-4 relative bg-white divide-y divide-gray-100 rounded-lg shadow w-full dark:bg-gray-700 overflow-y-scroll">
+                              {message &&
+                                message.map(
+                                  (sms, i) =>
+                                    (info.claimItemId === sms.id &&
+                                      sms.finderEmail ===
+                                        reduxReturnData.userStoreData.userInfo
+                                          .email &&
+                                      sms.finderEmail === info.finderEmail &&
+                                      sms.claimerEmai !==
+                                        reduxReturnData.userStoreData.userInfo
+                                          .email &&
+                                      sms.claimerEmail === info.claimerEmail) ||
+                                    (info.claimItemId === sms.id &&
+                                      sms.finderEmail === dat.dat.email && (
+                                        <>
+                                          {sms.messFinder && (
+                                            <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
+                                              {sms.messFinder}
+                                            </div>
+                                          )}
+                                          {sms.messClaimer && (
+                                            <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
+                                              {sms.messClaimer}
+                                            </div>
+                                          )}
+                                        </>
+                                      ))
+                                )}
+                            </div>
+                            <div className="w-full bg-zinc-600 h-[50px]  rounded-md p-1 mr-1">
+                              <input
+                                onChange={handelChat}
+                                type="text"
+                                name="chat"
+                                className="w-full h-full rounded-lg pl-2 "
+                              />
+                            </div>
+
+                            <div className="flex justify-start">
+                              <button
+                                onClick={() =>
+                                  handleSend({
+                                    claimData: info,
+                                    lostPst: dat.dat,
+                                  })
+                                }
+                                type=""
+                                className="w-[80%]   h-[30px]  border-t-2 text-blue-700 hover:text-white  border-blue-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm  dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800 "
+                              >
+                                Send{" "}
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <>
+                        {xOpen && chatToClaimerOpen == info.claimerEmail && (
+                          <button
+                            onClick={() => chatModalClose(info)}
+                            className="w-[105px] absolute right-[232px] z-30 bottom-[1px] h-[30px]  border-t-2 text-red-700 hover:text-white b border-red-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm  dark:border-blue-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800 "
+                          >
+                            X
+                          </button>
+                        )}
+                      </>
+                    </div>
+                  )
+              )}
+          </div>
+
+          <div className="w-[100%] border-1 mt-1 rounded-md p-[2px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+            <div className="flex items-center justify-end h-[40px] pl-1 space-x-4 ">
+              <button
+                onClick={() => (
+                  setModalClaimer(false),
+                  setChattoClaimerOpen(false),
+                  setxOpen(false)
                 )}
                 type="button"
                 className="text-red-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-2 mb-2 dark:border-blue-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-500 dark:focus:ring-blue-800"
