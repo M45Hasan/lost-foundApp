@@ -12,9 +12,9 @@ const chatSchema = new Schema({
   messFinder: { type: String },
   id: {
     type: Schema.Types.ObjectId,
-    ref: " lostitempost",
+    ref: " Lostitempost",
   },
   timestamp: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("chat", chatSchema);
+module.exports = mongoose.model("Chat", chatSchema);

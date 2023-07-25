@@ -1,6 +1,6 @@
 const express = require("express");
 const _ = express.Router();
-const Userinfo = require("../../model/regiModel");
+
 const path = require("path");
 const app = express();
 const {
@@ -16,11 +16,9 @@ const {
   getAllItemPost,
   claimFn,
   claimerDb,
-  claimerChat,
-  finderChat,
-  pechalClaim,
-  pechalFinder,
-  messageFun,
+  messagePost,
+  claimerButton,
+  messageGet,
 } = require("../../controller/regiCon");
 
 _.post("/regi", postController);
@@ -35,10 +33,9 @@ _.post("/userupdate", upDate);
 _.post("/getallpostlist", getAllItemPost);
 _.post("/claim", claimFn);
 _.get("/claimbd", claimerDb);
-_.get("/pechalfinder", pechalFinder);
-_.get("/message", messageFun);
-_.get("/pechalclaimer", pechalClaim);
-_.post("/finder2claimer", finderChat);
-_.post("/claimer2finder", claimerChat);
+_.get("/messageget", messageGet);
+
+_.post("/claimerbuttonpost", claimerButton);
+_.post("/messagepost", messagePost);
 
 module.exports = _;

@@ -37,7 +37,7 @@ const lostItemSchema = new Schema({
   message:[
     {
       type: Schema.Types.ObjectId,
-      ref: " chat",
+      ref: " Chat",
     },
   ]
 });
