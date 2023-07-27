@@ -8,7 +8,6 @@ import axios from "axios";
 import Card from "../components/Card";
 
 const User = () => {
-  let [hide, setHide] = useState(true);
   let navigate = useNavigate();
   let dispatch = useDispatch();
 
@@ -550,6 +549,42 @@ const User = () => {
                       </div>{" "}
                     </li>
                   ))}
+              </ul>
+            </div>
+
+            <div className="w-[220px] mt-4 border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+              <h5 className=" text-md mb-2 text-center font-bold tracking-tight text-gray-900 dark:text-white">
+                আমি খুঁজে পেয়েছি
+              </h5>
+              <ul className="flex  flex-wrap">
+                <li className="rounded-md w-[95%] hover:scale-110 ease-in duration-300 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  ">
+                  {" "}
+                  <div className=" items-start justify-center mt-2 flex  pl-1 space-x-2">
+                    <div className="flex-shrink-0">
+                      <img
+                        className="w-12 h-12 rounded-sm"
+                        src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
+                        alt="Bonnie image"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                        Mobile
+                      </p>
+                      <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                        "Nokia"
+                      </p>
+                    </div>
+                  </div>{" "}
+                  <div className="pl-[2px]">
+                    <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                      Finder: "Salauddin"
+                    </p>
+                    <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                      Comment: "Good "
+                    </p>
+                  </div>
+                </li>
               </ul>
             </div>
           </div>
