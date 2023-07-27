@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
-import { activeUser } from "../slice/UserSlice";
+
 import { activePic } from "../slice/picSlice";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import Card from "../components/Card";
 
 const User = () => {
-  let [hide, setHide] = useState(true);
   let navigate = useNavigate();
   let dispatch = useDispatch();
 
@@ -41,6 +40,7 @@ const User = () => {
   const [userImg, setUserImg] = useState("");
   const [myPostCard, setMyPostCard] = useState(false);
   const [trans, setTrans] = useState("");
+  const [myClaim, setMyClaim] = useState([]);
 
   const [postList, setPostList] = useState([]);
 
@@ -240,10 +240,25 @@ const User = () => {
     setMyPostCard(true);
   };
 
+  //### my Claim
+  useEffect(() => {
+    const myCalimList = async () => {
+      const how = await axios.post(
+        "http://localhost:5000/lostFound/claimpost",
+        {
+          email: reduxReturnData.userStoreData.userInfo.email,
+        }
+      );
+
+      setMyClaim(how.data);
+    };
+    myCalimList();
+  }, []);
+  console.log(myClaim);
   //#################### fetch data useffect end ####
   return (
     <div className="w-full  dark:bg-gray-600 ">
-      <Navbar xox={false} />
+      <Navbar />
 
       <div className=" flex justify-between  ">
         <div className="w-[30%] h-full  max-w-sm bg-white border  border-gray-200  shadow dark:bg-gray-800 dark:border-gray-700 relative ">
@@ -407,92 +422,172 @@ const User = () => {
             </div>
           </div>
         </div>
-        <div className="w-[70%] relative p-4">
-          <div className="w-[700px] mt-10  border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
-            <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-              My Post Item
-            </h5>
-            <ul className="flex gap-x-4 flex-wrap">
-              {postList &&
-                postList.map((data, i) => (
-                  <li
-                    key={i}
-                    // onClick={(item) => (setMyPostCard(true),console.log(item))}
-                    onClick={() => logOn(data)}
-                    className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
-                  >
-                    {" "}
-                    <div className=" items-center flex h-[80px] pl-1 space-x-2">
-                      <div key={u} className="flex-shrink-0">
-                        <img
-                          className="w-12 h-12 rounded-sm"
-                          src={data.itImage[0]}
-                          alt={""}
-                        />
-                      </div>
+        <div className="w-full flex  ">
+          <div className="w-[70%] relative p-4">
+            <div className="w-[700px] mt-10  border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+              <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                My Post Item
+              </h5>
+              <ul className="flex gap-x-4 flex-wrap">
+                {postList &&
+                  postList.map((data, i) => (
+                    <li
+                      key={i}
+                      // onClick={(item) => (setMyPostCard(true),console.log(item))}
+                      onClick={() => logOn(data)}
+                      className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
+                    >
+                      {" "}
+                      <div className=" items-center flex h-[80px] pl-1 space-x-2">
+                        <div key={u} className="flex-shrink-0">
+                          <img
+                            className="w-12 h-12 rounded-sm"
+                            src={data.itImage[0]}
+                            alt={""}
+                          />
+                        </div>
 
-                      <div className="flex-1 min-w-[140px]">
-                        <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                          {data.category}
-                        </p>
-                        <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
-                          {data.subcat}
-                        </p>
-                        <p className="text-[10px] text-cyan-500 truncate dark:text-cyan-400">
-                          {data.location}
-                        </p>
-                      </div>
-                    </div>{" "}
-                  </li>
-                ))}
-            </ul>
+                        <div className="flex-1 min-w-[140px]">
+                          <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                            {data.category}
+                          </p>
+                          <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                            {data.subcat}
+                          </p>
+                          <p className="text-[10px] text-cyan-500 truncate dark:text-cyan-400">
+                            {data.location}
+                          </p>
+                        </div>
+                      </div>{" "}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+
+            <div className="w-[700px] mt-14 border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+              <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                Delivered to owner
+              </h5>
+              <ul className="flex gap-x-4 flex-wrap">
+                <li className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  ">
+                  {" "}
+                  <div className=" items-center flex h-[80px] pl-1 space-x-2">
+                    <div className="flex-shrink-0">
+                      <img
+                        className="w-12 h-12 rounded-sm"
+                        src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
+                        alt="Bonnie image"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                        Mobile
+                      </p>
+                      <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                        "Nokia"
+                      </p>
+                      <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                        Owner: "Salauddin"
+                      </p>
+                      <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                        Comment: "Good "
+                      </p>
+                    </div>
+                  </div>{" "}
+                </li>
+              </ul>
+            </div>
+
+            {myPostCard && (
+              <div className="translate-y-[-337px]  translate-x-[-12px]">
+                <Card dat={trans} />
+
+                <div
+                  onClick={() => setMyPostCard(false)}
+                  className="w-[14px]  rounded-full absolute top-1 right-[1px] flex justify-center items-center  h-[98%]  text-red-700 hover:text-white  hover:bg-red-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm   dark:text-red-500 dark:hover:text-white dark:hover:bg-red-500 dark:focus:ring-blue-800 "
+                >
+                  X
+                </div>
+              </div>
+            )}
           </div>
-          <div className="w-full mt-14 border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
-            <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-              Delivered to owner
-            </h5>
-            <ul className="flex gap-x-4 flex-wrap">
-              <li className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  ">
-                {" "}
-                <div className=" items-center flex h-[80px] pl-1 space-x-2">
-                  <div className="flex-shrink-0">
-                    <img
-                      className="w-12 h-12 rounded-sm"
-                      src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
-                      alt="Bonnie image"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                      Mobile
-                    </p>
-                    <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
-                      "Nokia"
-                    </p>
+          <div className="w-[28%] p-4">
+            <div className="w-[220px] mt-10  border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+              <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                My Claim
+              </h5>
+              <ul className="flex gap-x-4 flex-wrap">
+                {myClaim &&
+                  myClaim.map((data, i) => (
+                    <li
+                      key={i}
+                      // onClick={(item) => (setMyPostCard(true),console.log(item))}
+                      onClick={() => logOn(data)}
+                      className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
+                    >
+                      {" "}
+                      <div className=" items-center flex h-[80px] pl-1 space-x-2">
+                        <div key={u} className="flex-shrink-0">
+                          <img
+                            className="w-12 h-12 rounded-sm"
+                            src={data.itImage[0]}
+                            alt={""}
+                          />
+                        </div>
+
+                        <div className="flex-1 min-w-[140px]">
+                          <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                            {data.category}
+                          </p>
+                          <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                            {data.subcat}
+                          </p>
+                          <p className="text-[10px] text-cyan-500 truncate dark:text-cyan-400">
+                            {data.location}
+                          </p>
+                        </div>
+                      </div>{" "}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+
+            <div className="w-[220px] mt-4 border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+              <h5 className=" text-md mb-2 text-center font-bold tracking-tight text-gray-900 dark:text-white">
+                আমি খুঁজে পেয়েছি
+              </h5>
+              <ul className="flex  flex-wrap">
+                <li className="rounded-md w-[95%] hover:scale-110 ease-in duration-300 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  ">
+                  {" "}
+                  <div className=" items-start justify-center mt-2 flex  pl-1 space-x-2">
+                    <div className="flex-shrink-0">
+                      <img
+                        className="w-12 h-12 rounded-sm"
+                        src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
+                        alt="Bonnie image"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                        Mobile
+                      </p>
+                      <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                        "Nokia"
+                      </p>
+                    </div>
+                  </div>{" "}
+                  <div className="pl-[2px]">
                     <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
-                      Owner: "Salauddin"
+                      Finder: "Salauddin"
                     </p>
                     <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
                       Comment: "Good "
                     </p>
                   </div>
-                </div>{" "}
-              </li>
-            </ul>
-          </div>
-
-          {myPostCard && (
-            <div className="translate-y-[-337px]  translate-x-[-52px]">
-              <Card dat={trans} />
-
-              <button
-                onClick={() => setMyPostCard(false)}
-                className="w-[20px]  rounded-full absolute top-1 right-[50px] z-30  h-[20px]  text-red-700 hover:text-white  hover:bg-red-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm   dark:text-red-500 dark:hover:text-white dark:hover:bg-red-500 dark:focus:ring-blue-800 "
-              >
-                X
-              </button>
+                </li>
+              </ul>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

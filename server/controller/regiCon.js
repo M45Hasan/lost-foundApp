@@ -285,7 +285,50 @@ const claimerButton = async (req, res) => {
   const how = await Claim.find({ claimItemId });
   res.send(how);
 };
+
+const myClaimPost = async (req, res) => {
+  const { email } = req.body;
+
+  const how = await Claim.find({ claimerEmail: email });
+ 
+
+  if (how.length > 0) {
+    const arr = [];
+    const low = await Lostitempost.find({});
+    low.forEach( (i) => {
+     how.forEach((j)=>{
+  
+      if ( i._id == j.claimItemId) {
+       arr.push(i)
+     }
+     })
+    });
+
+    res.send(arr);
+  }
+};
 //############ claimer button end ######
+//############ search fun start ######
+const searchFn = async (req, res) => {
+  const { category, subcat, detail, location, search } = req.body;
+
+  if (search !== "") {
+    const how = await Lostitempost.find({
+      $or: [
+        { category: { $regex: search, $options: "i" } },
+        { subcat: { $regex: search, $options: "i" } },
+        { detail: { $regex: search, $options: "i" } },
+        { location: { $regex: search, $options: "i" } },
+      ],
+    });
+    if (how.length > 0) {
+      res.send(how);
+    } else {
+      res.json({ Error: "Not Match" });
+    }
+  }
+};
+//############ search fun end ######
 module.exports = {
   postController,
   loginController,
@@ -302,4 +345,6 @@ module.exports = {
   messagePost,
   messageGet,
   claimerButton,
+  searchFn,
+  myClaimPost,
 };
