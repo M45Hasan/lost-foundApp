@@ -19,6 +19,7 @@ export const Card = (dat) => {
     chat: "",
   });
 
+  console.log(dat.dat)
   let reduxReturnData = useSelector((state) => state);
   //#### slider start #####
   const picClick = (e) => {
@@ -217,7 +218,7 @@ export const Card = (dat) => {
 
           <div className="w-full h-full border-t-2 rounded-lg ">
             <div className="  mt-[14px] mx-6 h-[180px] w-[95%] flex  flex-wrap">
-              {dat.dat.itImage.map((url, i) => (
+              {dat.dat.itImage && dat.dat.itImage.map((url, i) => (
                 <img
                   key={i}
                   onClick={(e) => picClick(e)}
@@ -294,7 +295,7 @@ export const Card = (dat) => {
                     type="button"
                     className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-[80%] py-2.5 text-center mr-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
                   >
-                    Claimer
+                    যারা দাবিদার
                   </button>
                 ) : (
                   <button
@@ -302,7 +303,7 @@ export const Card = (dat) => {
                     type="button"
                     className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-[80%] py-2.5 text-center mr-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
                   >
-                    Claim it
+                   দাবি করুন
                   </button>
                 )}
               </div>
@@ -364,12 +365,12 @@ export const Card = (dat) => {
                                       sms.finderEmail === dat.dat.email && (
                                         <>
                                           {sms.messClaimer && (
-                                            <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
+                                            <div key={i} className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
                                               {sms.messClaimer}
                                             </div>
                                           )}
                                           {sms.messFinder && (
-                                            <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
+                                            <div key={i} className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
                                               {sms.messFinder}
                                             </div>
                                           )}
