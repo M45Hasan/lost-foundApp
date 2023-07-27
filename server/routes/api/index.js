@@ -19,6 +19,8 @@ const {
   messagePost,
   claimerButton,
   messageGet,
+  searchFn,
+  myClaimPost,
 } = require("../../controller/regiCon");
 
 _.post("/regi", postController);
@@ -37,5 +39,7 @@ _.get("/messageget", messageGet);
 
 _.post("/claimerbuttonpost", claimerButton);
 _.post("/messagepost", messagePost);
+_.post("/searchpost", searchFn);
+_.post("/claimpost", myClaimPost);
 
 module.exports = _;

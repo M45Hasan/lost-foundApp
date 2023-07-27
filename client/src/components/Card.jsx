@@ -19,6 +19,7 @@ export const Card = (dat) => {
     chat: "",
   });
 
+  console.log(dat.dat)
   let reduxReturnData = useSelector((state) => state);
   //#### slider start #####
   const picClick = (e) => {
@@ -217,7 +218,7 @@ export const Card = (dat) => {
 
           <div className="w-full h-full border-t-2 rounded-lg ">
             <div className="  mt-[14px] mx-6 h-[180px] w-[95%] flex  flex-wrap">
-              {dat.dat.itImage.map((url, i) => (
+              {dat.dat.itImage && dat.dat.itImage.map((url, i) => (
                 <img
                   key={i}
                   onClick={(e) => picClick(e)}
