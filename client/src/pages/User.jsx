@@ -254,7 +254,7 @@ const User = () => {
     };
     myCalimList();
   }, []);
-  console.log(myClaim);
+  console.log("myClaim",myClaim);
   //#################### fetch data useffect end ####
   return (
     <div className="w-full  dark:bg-gray-600 ">

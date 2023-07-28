@@ -240,24 +240,13 @@ const upDate = async (req, res) => {
 };
 //############## chatting  start #####
 const messagePost = async (req, res) => {
-  const {
-    postId,
-    finderEmail,
-    finderName,
-    claimerEmail,
-    claimerName,
-    messClaimer,
-    messFinder,
-  } = req.body;
+  const { postId, reciverEmail, senderEmail, mess } = req.body;
 
   const cert = new Chat({
     postId,
-    finderEmail,
-    finderName,
-    claimerEmail,
-    claimerName,
-    messClaimer,
-    messFinder,
+    reciverEmail,
+    senderEmail,
+    mess,
   });
 
   cert.save();
@@ -275,7 +264,7 @@ const messagePost = async (req, res) => {
 };
 
 const messageGet = async (req, res) => {
-  const how = await Chat.find();
+  const how = await Chat.find({});
   res.send(how);
 };
 //############## chatting  end #####
@@ -290,18 +279,16 @@ const myClaimPost = async (req, res) => {
   const { email } = req.body;
 
   const how = await Claim.find({ claimerEmail: email });
- 
 
   if (how.length > 0) {
     const arr = [];
     const low = await Lostitempost.find({});
-    low.forEach( (i) => {
-     how.forEach((j)=>{
-  
-      if ( i._id == j.claimItemId) {
-       arr.push(i)
-     }
-     })
+    low.forEach((i) => {
+      how.forEach((j) => {
+        if (i._id == j.claimItemId) {
+          arr.push(i);
+        }
+      });
     });
 
     res.send(arr);
