@@ -19,7 +19,6 @@ export const Card = (dat) => {
     chat: "",
   });
 
-  console.log(dat.dat)
   let reduxReturnData = useSelector((state) => state);
   //#### slider start #####
   const picClick = (e) => {
@@ -41,45 +40,30 @@ export const Card = (dat) => {
     try {
       if (
         reduxReturnData.userStoreData.userInfo.email ===
-          e.claimData.claimerEmail &&
-        reduxReturnData.userStoreData.userInfo.email !== e.lostPst.email
+          e.claimData.claimerEmail
       ) {
         await axios.post("http://localhost:5000/lostFound/messagepost", {
           postId: e.lostPst._id,
-          finderEmail: e.lostPst.email,
-          finderName: e.lostPst.name,
-          claimerEmail: reduxReturnData.userStoreData.userInfo.email,
-          claimerName: reduxReturnData.userStoreData.userInfo.displayName,
-          messClaimer: chat.chat,
+          reciverEmail: e.lostPst.email,
+          
+          senderEmail: reduxReturnData.userStoreData.userInfo.email,
+         
+          mess: chat.chat,
         });
       } else {
         await axios.post("http://localhost:5000/lostFound/messagepost", {
           postId: e.lostPst._id,
-          finderEmail: reduxReturnData.userStoreData.userInfo.email,
-          finderName: reduxReturnData.userStoreData.userInfo.displayName,
-          claimerEmail: e.claimData.claimerEmai,
-          claimerName: e.claimData.claimerName,
-          messFinder: chat.chat,
+          reciverEmail: e.claimData.claimerEmail,
+    
+          senderEmail: e.lostPst.email,
+        
+          mess: chat.chat,
         });
       }
     } catch (err) {
       console.error("error:", err);
     }
-
-    setTimeout(() => {
-      const data = async () => {
-        const how = await axios.get(
-          "http://localhost:5000/lostFound/messageget"
-        );
-
-        if (how.data.length > 0) {
-          setMessagge(how.data);
-        }
-      };
-      data();
-    }, 500);
   };
-  console.log(message);
 
   useEffect(() => {
     const data = async () => {
@@ -91,6 +75,7 @@ export const Card = (dat) => {
     };
     data();
   }, []);
+  console.log("messageList:", message);
   //####### send sms start ########
 
   //###### chat function end #####
@@ -98,6 +83,7 @@ export const Card = (dat) => {
 
   const chatToClaimerModal = (e) => {
     setChattoClaimerOpen(e.claimerEmail);
+    console.log("chatBoxfor", e.claimerName);
     setxOpen(true);
   };
   const chatModal2 = (e) => {
@@ -133,7 +119,7 @@ export const Card = (dat) => {
   //###### Claimer function start #####
 
   const claimeRFun = async (e) => {
-    console.log(e);
+    console.log("lostPostinfo:", e);
     try {
       const how = await axios
         .post("http://localhost:5000/lostFound/claimerbuttonpost", {
@@ -218,15 +204,16 @@ export const Card = (dat) => {
 
           <div className="w-full h-full border-t-2 rounded-lg ">
             <div className="  mt-[14px] mx-6 h-[180px] w-[95%] flex  flex-wrap">
-              {dat.dat.itImage && dat.dat.itImage.map((url, i) => (
-                <img
-                  key={i}
-                  onClick={(e) => picClick(e)}
-                  className=" rounded-sm h-[70px] w-[70px] mx-[10px] object-cover  shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] cursor-pointer ease-in-out duration-500 hover:rotate-6 hover:scale-125 "
-                  src={url}
-                  alt=""
-                />
-              ))}
+              {dat.dat.itImage &&
+                dat.dat.itImage.map((url, i) => (
+                  <img
+                    key={i}
+                    onClick={(e) => picClick(e)}
+                    className=" rounded-sm h-[70px] w-[70px] mx-[10px] object-cover  shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] cursor-pointer ease-in-out duration-500 hover:rotate-6 hover:scale-125 "
+                    src={url}
+                    alt=""
+                  />
+                ))}
             </div>
           </div>
         </div>
@@ -303,7 +290,7 @@ export const Card = (dat) => {
                     type="button"
                     className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-[80%] py-2.5 text-center mr-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
                   >
-                   দাবি করুন
+                    দাবি করুন
                   </button>
                 )}
               </div>
@@ -353,30 +340,40 @@ export const Card = (dat) => {
                           <div key={k} className=" relative">
                             <div className="z-10 h-[200px] p-4 relative bg-white divide-y divide-gray-100 rounded-lg shadow w-full dark:bg-gray-700 overflow-y-scroll">
                               {message &&
-                                message.map(
-                                  (sms, i) =>
-                                    (info.claimItemId === sms.id &&
-                                      sms.claimerEmail ===
-                                        reduxReturnData.userStoreData.userInfo
-                                          .email &&
-                                      sms.finderEmail === info.finderEmail) ||
-                                    (info.claimItemId === sms.id &&
-                                      sms.id === dat.dat._id &&
-                                      sms.finderEmail === dat.dat.email && (
+                                message.map((sms, i) => (
+                                  <>
+                                    {sms.postId ===info.claimItemId &&
+                                      reduxReturnData.userStoreData.userInfo
+                                        .email=== sms.senderEmail &&
+                                     (
                                         <>
-                                          {sms.messClaimer && (
-                                            <div key={i} className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
-                                              {sms.messClaimer}
-                                            </div>
-                                          )}
-                                          {sms.messFinder && (
-                                            <div key={i} className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
-                                              {sms.messFinder}
+                                          {sms.mess && (
+                                            <div
+                                              key={i}
+                                              className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200"
+                                            >
+                                              {sms.mess}
                                             </div>
                                           )}
                                         </>
-                                      ))
-                                )}
+                                      )}
+
+                                    { info.claimerEmail===sms.reciverEmail  && sms.postId ===info.claimItemId &&
+                                      reduxReturnData.userStoreData.userInfo
+                                        .email!== sms.senderEmail && (
+                                        <>
+                                          {sms.mess && (
+                                            <div
+                                              key={i}
+                                              className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200"
+                                            >
+                                              {sms.mess}
+                                            </div>
+                                          )}
+                                        </>
+                                      )}
+                                  </>
+                                ))}
                             </div>
 
                             <div className="w-full bg-zinc-600 h-[50px]  rounded-md p-1 mr-1">
@@ -478,33 +475,39 @@ export const Card = (dat) => {
                           <div className=" relative">
                             <div className="z-10 h-[250px] p-4 relative bg-white divide-y divide-gray-100 rounded-lg shadow w-full dark:bg-gray-700 overflow-y-scroll">
                               {message &&
-                                message.map(
-                                  (sms, i) =>
-                                    (info.claimItemId === sms.id &&
-                                      sms.finderEmail ===
-                                        reduxReturnData.userStoreData.userInfo
-                                          .email &&
-                                      sms.finderEmail === info.finderEmail &&
-                                      sms.claimerEmai !==
-                                        reduxReturnData.userStoreData.userInfo
-                                          .email &&
-                                      sms.claimerEmail === info.claimerEmail) ||
-                                    (info.claimItemId === sms.id &&
-                                      sms.finderEmail === dat.dat.email && (
+                                message.map((sms, i) => (
+                                  <>
+                                    { info.claimerEmail==sms.reciverEmail  &&
+                                      reduxReturnData.userStoreData.userInfo
+                                        .email !==sms.reciverEmail && (
+                                      <>
+                                        {sms.mess && (
+                                          <div
+                                            key={i}
+                                            className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200"
+                                          >
+                                            {sms.mess},
+                                          </div>
+                                        )}
+                                      </>
+                                    )}
+
+                                    { info.claimerEmail===sms.senderEmail  &&
+                                      reduxReturnData.userStoreData.userInfo
+                                        .email ===sms.reciverEmail  && (
                                         <>
-                                          {sms.messFinder && (
-                                            <div className=" mb-3 p-2 w-[70%] rounded-md translate-x-[150px] h-[50px] bg-blue-200">
-                                              {sms.messFinder}
-                                            </div>
-                                          )}
-                                          {sms.messClaimer && (
-                                            <div className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200">
-                                              {sms.messClaimer}
+                                          {sms.mess && (
+                                            <div
+                                              key={i}
+                                              className="mb-3 p-2 w-[70%] rounded-md h-[50px] bg-red-200"
+                                            >
+                                              {sms.mess}
                                             </div>
                                           )}
                                         </>
-                                      ))
-                                )}
+                                      )}
+                                  </>
+                                ))}
                             </div>
                             <div className="w-full bg-zinc-600 h-[50px]  rounded-md p-1 mr-1">
                               <input
