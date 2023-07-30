@@ -43,6 +43,7 @@ const User = () => {
   const [myClaim, setMyClaim] = useState([]);
 
   const [postList, setPostList] = useState([]);
+  const [getApply, setGetApply] = useState([]);
 
   //##### Page Navigate Start ####
 
@@ -254,7 +255,16 @@ const User = () => {
     };
     myCalimList();
   }, []);
-  console.log("myClaim",myClaim);
+  console.log("myClaim", myClaim);
+
+  //apply data
+  useEffect(() => {
+    const appLy = async () => {
+      const low = await axios.get("http://localhost:5000/lostFound/applyget");
+      setGetApply(low.data);
+    };
+    appLy();
+  }, []);
   //#################### fetch data useffect end ####
   return (
     <div className="w-full  dark:bg-gray-600 ">
@@ -496,6 +506,53 @@ const User = () => {
                   </div>{" "}
                 </li>
               </ul>
+            </div>
+
+            <div className="w-[700px] mt-14 border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+              {getApply &&
+                getApply.map((ap, i) => (
+                  <>
+                    {ap.claimerEmail ===
+                    reduxReturnData.userStoreData.userInfo.email ? (
+                      <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                        Approve for receive / অপেক্ষমান{" "}
+                      </h5>
+                    ) : (
+                      <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                        Approve for deliver / অপেক্ষমান{" "}
+                      </h5>
+                    )}
+
+                    <ul className="flex gap-x-4 flex-wrap">
+                      <li className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  ">
+                        {" "}
+                        <div className=" items-center flex h-[80px] pl-1 space-x-2">
+                          <div className="flex-shrink-0">
+                            <img
+                              className="w-12 h-12 rounded-sm"
+                              src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
+                              alt="Bonnie image"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              Mobile
+                            </p>
+                            <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                              "Nokia"
+                            </p>
+                            <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                              Owner: "Salauddin"
+                            </p>
+                            <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                              Comment: "Good "
+                            </p>
+                          </div>
+                        </div>{" "}
+                      </li>
+                    </ul>
+                  </>
+                ))}
             </div>
 
             {myPostCard && (

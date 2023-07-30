@@ -8,6 +8,7 @@ const Lostitempost = require("../model/lostPostModel");
 const Itemhelper = require("../model/itmHelperModel");
 const Claim = require("../model/claimModel");
 const Chat = require("../model/chatModal");
+const Application = require("../model/applicationModel");
 
 const opts = {
   overwrite: true,
@@ -128,6 +129,7 @@ const claimFn = async (req, res) => {
     finderName,
     fiderId,
     fiderURL,
+    finderEmail,
   } = req.body;
 
   const low = await Claim.find({ claimItemId, claimerEmail });
@@ -143,6 +145,7 @@ const claimFn = async (req, res) => {
       finderName,
       fiderId,
       fiderURL,
+      finderEmail,
     });
 
     cret
@@ -316,6 +319,94 @@ const searchFn = async (req, res) => {
   }
 };
 //############ search fun end ######
+//############ confirm fun starrt ######
+const confirmFn = async (req, res) => {
+  const { id, confirm } = req.body;
+
+  const how = await Claim.findOneAndUpdate(
+    { _id: id },
+    { $set: { confirm: confirm } },
+    { new: true }
+  );
+  res.send(how);
+};
+
+const confdelFn = async (req, res) => {
+  const { claimItemId } = req.body;
+
+  const low = await Claim.find({ claimItemId: claimItemId, confirm: true });
+
+  if (low.length > 0) {
+    res.send(true);
+  } else {
+    res.send(false);
+  }
+};
+//############ confirm fun end ######
+//############ application fun start ######
+const appDel = async (req, res) => {
+  const { id, confirm } = req.body;
+  const how = await Claim.findOneAndUpdate(
+    { _id: id },
+    { $set: { confirm: confirm } },
+    { new: true }
+  );
+  res.send(how);
+};
+//############ application del fun end ######
+//############ Apply for product veri fun start ######
+const appFun = async (req, res) => {
+  const {
+    claimerName,
+    claimerEmail,
+    claimerURL,
+    claimItemId,
+    category,
+    subcat,
+    finderName,
+    fiderId,
+    fiderURL,
+    finderEmail,
+    confirm,
+    opt,
+    claimId,
+  } = req.body;
+
+  const crt = new Application({
+    claimerName: claimerName,
+    claimerEmail: claimerEmail,
+    claimerURL: claimerURL,
+    itemId: claimItemId,
+    category: category,
+    subcat: subcat,
+    finderName: finderName,
+    fiderId: fiderId,
+    fiderURL: fiderURL,
+    finderEmail: finderEmail,
+    confirm: confirm,
+    opt: opt,
+    claimId: claimId,
+  });
+
+  crt.save();
+
+  if (crt.claimId !== "") {
+    await Claim.findByIdAndDelete({ _id: crt.claimId });
+    res.send("Application successfully submitted");
+  } else {
+    res.send("Error");
+  }
+};
+// fetch
+const applGet = async (req, res) => {
+  const how = await Application.find({});
+  if (how.length > 0) {
+    res.send(how);
+  } else {
+    res.send("No data");
+  }
+};
+//############ Apply for product veri fun end ######
 module.exports = {
   postController,
   loginController,
@@ -334,4 +425,9 @@ module.exports = {
   claimerButton,
   searchFn,
   myClaimPost,
+  confirmFn,
+  confdelFn,
+  appDel,
+  appFun,
+  applGet,
 };

@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const claimSchema = new Schema({
+const appSchema = new Schema({
   claimerName: { type: String },
   claimerEmail: { type: String },
   claimerURL: { type: String },
@@ -13,7 +13,9 @@ const claimSchema = new Schema({
   fiderId: { type: String },
   fiderURL: { type: String },
   finderEmail: { type: String },
-  confirm: { type: Boolean, default: false },
+  confirm: { type: String, default: "pendding" ,required:["pendding","approved","cancel"] },
+  opt: { type: Number },
+  claimId:{type:Schema.Types.ObjectId,ref:"Claim"}
 });
 
-module.exports = mongoose.model("Claim", claimSchema);
+module.exports = mongoose.model("Application", appSchema);
