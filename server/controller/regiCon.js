@@ -8,6 +8,10 @@ const Lostitempost = require("../model/lostPostModel");
 const Itemhelper = require("../model/itmHelperModel");
 const Claim = require("../model/claimModel");
 const Chat = require("../model/chatModal");
+const Application = require("../model/applicationModel");
+const History = require("../model/delrevModel");
+const emailV = require("../utils/emailverfy");
+const { generateAndCopyOTP } = require("../utils/optgen");
 
 const opts = {
   overwrite: true,
@@ -106,7 +110,7 @@ const getLostItemPost = async (req, res) => {
 };
 const getAllItemPost = async (req, res) => {
   try {
-    const how = await Lostitempost.find();
+    const how = await Lostitempost.find({});
     if (how.length > 0) {
       res.send(how);
     } else {
@@ -128,6 +132,7 @@ const claimFn = async (req, res) => {
     finderName,
     fiderId,
     fiderURL,
+    finderEmail,
   } = req.body;
 
   const low = await Claim.find({ claimItemId, claimerEmail });
@@ -143,6 +148,7 @@ const claimFn = async (req, res) => {
       finderName,
       fiderId,
       fiderURL,
+      finderEmail,
     });
 
     cret
@@ -240,24 +246,13 @@ const upDate = async (req, res) => {
 };
 //############## chatting  start #####
 const messagePost = async (req, res) => {
-  const {
-    postId,
-    finderEmail,
-    finderName,
-    claimerEmail,
-    claimerName,
-    messClaimer,
-    messFinder,
-  } = req.body;
+  const { postId, reciverEmail, senderEmail, mess } = req.body;
 
   const cert = new Chat({
     postId,
-    finderEmail,
-    finderName,
-    claimerEmail,
-    claimerName,
-    messClaimer,
-    messFinder,
+    reciverEmail,
+    senderEmail,
+    mess,
   });
 
   cert.save();
@@ -275,7 +270,7 @@ const messagePost = async (req, res) => {
 };
 
 const messageGet = async (req, res) => {
-  const how = await Chat.find();
+  const how = await Chat.find({});
   res.send(how);
 };
 //############## chatting  end #####
@@ -290,18 +285,16 @@ const myClaimPost = async (req, res) => {
   const { email } = req.body;
 
   const how = await Claim.find({ claimerEmail: email });
- 
 
   if (how.length > 0) {
     const arr = [];
     const low = await Lostitempost.find({});
-    low.forEach( (i) => {
-     how.forEach((j)=>{
-  
-      if ( i._id == j.claimItemId) {
-       arr.push(i)
-     }
-     })
+    low.forEach((i) => {
+      how.forEach((j) => {
+        if (i._id == j.claimItemId) {
+          arr.push(i);
+        }
+      });
     });
 
     res.send(arr);
@@ -329,6 +322,185 @@ const searchFn = async (req, res) => {
   }
 };
 //############ search fun end ######
+//############ confirm fun starrt ######
+const confirmFn = async (req, res) => {
+  const { id, confirm } = req.body;
+
+  const how = await Claim.findOneAndUpdate(
+    { _id: id },
+    { $set: { confirm: confirm } },
+    { new: true }
+  );
+  res.send(how);
+};
+
+const confdelFn = async (req, res) => {
+  const { claimItemId } = req.body;
+
+  const low = await Claim.find({ claimItemId: claimItemId, confirm: true });
+
+  if (low.length > 0) {
+    res.send(true);
+  } else {
+    res.send(false);
+  }
+};
+//############ confirm fun end ######
+//############ application fun start ######
+const appDel = async (req, res) => {
+  const { id, confirm } = req.body;
+  const how = await Claim.findOneAndUpdate(
+    { _id: id },
+    { $set: { confirm: confirm } },
+    { new: true }
+  );
+  res.send(how);
+};
+//############ application del fun end ######
+//############ Apply for product veri fun start ######
+const appFun = async (req, res) => {
+  const {
+    claimerName,
+    claimerEmail,
+    claimerURL,
+    claimItemId,
+    category,
+    subcat,
+    finderName,
+    fiderId,
+    fiderURL,
+    finderEmail,
+    confirm,
+    opt,
+    claimId,
+    nid,
+    mb,
+  } = req.body;
+
+  const crt = new Application({
+    claimerName: claimerName,
+    claimerEmail: claimerEmail,
+    claimerURL: claimerURL,
+    itemId: claimItemId,
+    category: category,
+    subcat: subcat,
+    finderName: finderName,
+    fiderId: fiderId,
+    fiderURL: fiderURL,
+    finderEmail: finderEmail,
+    confirm: confirm,
+    opt: opt,
+    claimId: claimId,
+    nid: nid,
+    mb: mb,
+  });
+
+  crt.save();
+
+  if (crt.claimId !== "") {
+    await Claim.findByIdAndDelete({ _id: crt.claimId });
+    res.send("Application successfully submitted");
+  } else {
+    res.send("Error");
+  }
+};
+// fetch
+const applGet = async (req, res) => {
+  const how = await Application.find({});
+  if (how.length > 0) {
+    res.send(how);
+  }
+};
+
+//apforreceive post
+
+const apforreceiveFn = async (req, res) => {
+  const { id } = req.body;
+
+  const how = await Lostitempost.find({ _id: id });
+
+  if (how.length > 0) {
+    res.send(how);
+  } else {
+    res.send("No data found");
+  }
+};
+//############ Apply for product veri fun end ######
+//############ email verifi start  and otp ######
+
+const emailVeri = async (req, res) => {
+  const { email, itemId, appId } = req.body;
+  const otp = generateAndCopyOTP();
+  console.log(otp);
+  const how = await Application.findOneAndUpdate(
+    { _id: appId },
+    { $set: { opt: otp } },
+    { new: true }
+  );
+
+  emailV(email, otp, "Verification");
+};
+
+const otpclaimerFn = async (req, res) => {
+  const { itemId, opt, claimerEmail, id } = req.body;
+
+  const how = await Application.find({
+    itemId: itemId,
+    opt: opt,
+    claimerEmail: claimerEmail,
+  });
+
+  if (how.length > 0) {
+    await Application.updateMany(
+      { _id: id },
+      { $set: { confirm: "approved", opt: null } },
+      { new: true }
+    );
+    res.send("Verification Succeed ");
+  } else {
+    await Application.updateMany(
+      { _id: id },
+      { $set: { confirm: "cancel", opt: null } },
+      { new: true }
+    );
+    res.send(" Verification Failed");
+  }
+};
+
+//############ email verifi end ######
+//############ thankComment history start ######
+const history = async (req, res) => {
+  const { claimerEmail, id, mess, rate } = req.body;
+
+  const how = await Application.find({
+    _id: id,
+    claimerEmail: claimerEmail,
+  });
+  if (how.length > 0) {
+    const crt = new History({
+      claimerName: how[0].claimerName,
+      claimerEmail: claimerEmail,
+      claimerURL: how[0].claimerURL,
+      itemURL: how[0].itemURL,
+      category: how[0].category,
+      subcat: how[0].subcat,
+      finderName: how[0].finderName,
+      fiderId: how[0].fiderId,
+      fiderURL: how[0].fiderURL,
+      finderEmail: how[0].finderEmail,
+      mess: mess,
+    });
+    crt.save();
+
+    const lew = await History.findOneAndUpdate(
+      { _id: crt._id },
+      { $set: { rate: rate } },
+      { new: true }
+    );
+    res.send(lew);
+  }
+};
+//############ thankComment history end ######
 module.exports = {
   postController,
   loginController,
@@ -347,4 +519,13 @@ module.exports = {
   claimerButton,
   searchFn,
   myClaimPost,
+  confirmFn,
+  confdelFn,
+  appDel,
+  appFun,
+  applGet,
+  apforreceiveFn,
+  emailVeri,
+  otpclaimerFn,
+  history,
 };

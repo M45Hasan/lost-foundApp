@@ -21,6 +21,15 @@ const {
   messageGet,
   searchFn,
   myClaimPost,
+  confirmFn,
+  confdelFn,
+  appDel,
+  appFun,
+  applGet,
+  apforreceiveFn,
+  emailVeri,
+  otpclaimerFn,
+  history
 } = require("../../controller/regiCon");
 
 _.post("/regi", postController);
@@ -36,10 +45,19 @@ _.post("/getallpostlist", getAllItemPost);
 _.post("/claim", claimFn);
 _.get("/claimbd", claimerDb);
 _.get("/messageget", messageGet);
+_.get("/applyget", applGet);
 
 _.post("/claimerbuttonpost", claimerButton);
 _.post("/messagepost", messagePost);
 _.post("/searchpost", searchFn);
 _.post("/claimpost", myClaimPost);
+_.post("/confirm", confirmFn);
+_.post("/confrimdelete", confdelFn);
+_.post("/delapplication", appDel);
+_.post("/apply", appFun);
+_.post("/apforreceive", apforreceiveFn);
+_.post("/emailveri", emailVeri);
+_.post("/otpclaimer", otpclaimerFn);
+_.post("/history", history);
 
 module.exports = _;

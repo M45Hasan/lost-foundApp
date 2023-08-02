@@ -10,8 +10,10 @@ const claimSchema = new Schema({
   category: { type: String },
   subcat: { type: String },
   finderName: { type: String },
-  fiderId: { type: String }, 
+  fiderId: { type: String },
   fiderURL: { type: String },
+  finderEmail: { type: String },
+  confirm: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model("Claim", claimSchema);
