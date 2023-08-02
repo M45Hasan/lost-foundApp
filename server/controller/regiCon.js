@@ -9,6 +9,9 @@ const Itemhelper = require("../model/itmHelperModel");
 const Claim = require("../model/claimModel");
 const Chat = require("../model/chatModal");
 const Application = require("../model/applicationModel");
+const History = require("../model/delrevModel");
+const emailV = require("../utils/emailverfy");
+const { generateAndCopyOTP } = require("../utils/optgen");
 
 const opts = {
   overwrite: true,
@@ -107,7 +110,7 @@ const getLostItemPost = async (req, res) => {
 };
 const getAllItemPost = async (req, res) => {
   try {
-    const how = await Lostitempost.find();
+    const how = await Lostitempost.find({});
     if (how.length > 0) {
       res.send(how);
     } else {
@@ -370,6 +373,8 @@ const appFun = async (req, res) => {
     confirm,
     opt,
     claimId,
+    nid,
+    mb,
   } = req.body;
 
   const crt = new Application({
@@ -386,6 +391,8 @@ const appFun = async (req, res) => {
     confirm: confirm,
     opt: opt,
     claimId: claimId,
+    nid: nid,
+    mb: mb,
   });
 
   crt.save();
@@ -402,11 +409,98 @@ const applGet = async (req, res) => {
   const how = await Application.find({});
   if (how.length > 0) {
     res.send(how);
+  }
+};
+
+//apforreceive post
+
+const apforreceiveFn = async (req, res) => {
+  const { id } = req.body;
+
+  const how = await Lostitempost.find({ _id: id });
+
+  if (how.length > 0) {
+    res.send(how);
   } else {
-    res.send("No data");
+    res.send("No data found");
   }
 };
 //############ Apply for product veri fun end ######
+//############ email verifi start  and otp ######
+
+const emailVeri = async (req, res) => {
+  const { email, itemId, appId } = req.body;
+  const otp = generateAndCopyOTP();
+  console.log(otp);
+  const how = await Application.findOneAndUpdate(
+    { _id: appId },
+    { $set: { opt: otp } },
+    { new: true }
+  );
+
+  emailV(email, otp, "Verification");
+};
+
+const otpclaimerFn = async (req, res) => {
+  const { itemId, opt, claimerEmail, id } = req.body;
+
+  const how = await Application.find({
+    itemId: itemId,
+    opt: opt,
+    claimerEmail: claimerEmail,
+  });
+
+  if (how.length > 0) {
+    await Application.updateMany(
+      { _id: id },
+      { $set: { confirm: "approved", opt: null } },
+      { new: true }
+    );
+    res.send("Verification Succeed ");
+  } else {
+    await Application.updateMany(
+      { _id: id },
+      { $set: { confirm: "cancel", opt: null } },
+      { new: true }
+    );
+    res.send(" Verification Failed");
+  }
+};
+
+//############ email verifi end ######
+//############ thankComment history start ######
+const history = async (req, res) => {
+  const { claimerEmail, id, mess, rate } = req.body;
+
+  const how = await Application.find({
+    _id: id,
+    claimerEmail: claimerEmail,
+  });
+  if (how.length > 0) {
+    const crt = new History({
+      claimerName: how[0].claimerName,
+      claimerEmail: claimerEmail,
+      claimerURL: how[0].claimerURL,
+      itemURL: how[0].itemURL,
+      category: how[0].category,
+      subcat: how[0].subcat,
+      finderName: how[0].finderName,
+      fiderId: how[0].fiderId,
+      fiderURL: how[0].fiderURL,
+      finderEmail: how[0].finderEmail,
+      mess: mess,
+    });
+    crt.save();
+
+    const lew = await History.findOneAndUpdate(
+      { _id: crt._id },
+      { $set: { rate: rate } },
+      { new: true }
+    );
+    res.send(lew);
+  }
+};
+//############ thankComment history end ######
 module.exports = {
   postController,
   loginController,
@@ -430,4 +524,8 @@ module.exports = {
   appDel,
   appFun,
   applGet,
+  apforreceiveFn,
+  emailVeri,
+  otpclaimerFn,
+  history,
 };

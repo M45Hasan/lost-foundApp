@@ -46,6 +46,7 @@ const ApplicationModal = (data) => {
 
   const applyF = async (e) => {
    console.log(e._id)
+   console.log(get.nid,get.mb)
     try{
       const how = await axios.post("http://localhost:5000/lostFound/apply",{
 
@@ -62,6 +63,8 @@ const ApplicationModal = (data) => {
       confirm:"pendding",
       opt:"",
       claimId:e._id,
+      nid:get.nid,
+      mb:get.mb,
 
 
 
@@ -73,9 +76,9 @@ const ApplicationModal = (data) => {
     setShowApp(true);
 
 
-    // setTimeout(() => {
-    //   navigate("/");
-    // }, 1000);
+    setTimeout(() => {
+      navigate("/");
+    }, 1000);
   };
   //#### apply
   //#### cancel

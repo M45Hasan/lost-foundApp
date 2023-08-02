@@ -6,6 +6,7 @@ import { activePic } from "../slice/picSlice";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import Card from "../components/Card";
+import Cardx from "../components/Cardx";
 
 const User = () => {
   let navigate = useNavigate();
@@ -44,6 +45,8 @@ const User = () => {
 
   const [postList, setPostList] = useState([]);
   const [getApply, setGetApply] = useState([]);
+  const [apforreceive, setApforreceive] = useState([]);
+  const [apforreceiveShow, setApforreceiveShow] = useState(false);
 
   //##### Page Navigate Start ####
 
@@ -261,11 +264,32 @@ const User = () => {
   useEffect(() => {
     const appLy = async () => {
       const low = await axios.get("http://localhost:5000/lostFound/applyget");
-      setGetApply(low.data);
+      console.log(low.data);
+      if (low.data.length > 0) {
+        setGetApply(low.data);
+      }
     };
     appLy();
   }, []);
   //#################### fetch data useffect end ####
+
+  //######### approve for receive start ####
+  const aplyShow = async (e) => {
+    const low = await axios.post(
+      "http://localhost:5000/lostFound/apforreceive",
+      {
+        id: e,
+      }
+    );
+    if (low.data.length === 1) {
+      setApforreceiveShow(true);
+      setApforreceive(low.data);
+    }
+  };
+  console.log(apforreceive);
+  //######### approve for receive end ####
+  //opt
+
   return (
     <div className="w-full  dark:bg-gray-600 ">
       <Navbar />
@@ -479,82 +503,169 @@ const User = () => {
                 Delivered to owner
               </h5>
               <ul className="flex gap-x-4 flex-wrap">
-                <li className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  ">
-                  {" "}
-                  <div className=" items-center flex h-[80px] pl-1 space-x-2">
-                    <div className="flex-shrink-0">
-                      <img
-                        className="w-12 h-12 rounded-sm"
-                        src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
-                        alt="Bonnie image"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                        Mobile
-                      </p>
-                      <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
-                        "Nokia"
-                      </p>
-                      <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
-                        Owner: "Salauddin"
-                      </p>
-                      <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
-                        Comment: "Good "
-                      </p>
-                    </div>
-                  </div>{" "}
-                </li>
+                <>
+                  <li className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  ">
+                    {" "}
+                    <div className=" items-center flex h-[80px] pl-1 space-x-2">
+                      <div className="flex-shrink-0">
+                        <img
+                          className="w-12 h-12 rounded-sm"
+                          src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
+                          alt="Bonnie image"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                          Mobile
+                        </p>
+                        <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                          "Nokia"
+                        </p>
+                        <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                          Owner: "Salauddin"
+                        </p>
+                        <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                          Comment: "Good "
+                        </p>
+                      </div>
+                    </div>{" "}
+                  </li>
+                </>
               </ul>
             </div>
 
             <div className="w-[700px] mt-14 border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
-              {getApply &&
-                getApply.map((ap, i) => (
-                  <>
-                    {ap.claimerEmail ===
-                    reduxReturnData.userStoreData.userInfo.email ? (
-                      <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-                        Approve for receive / অপেক্ষমান{" "}
-                      </h5>
-                    ) : (
-                      <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-                        Approve for deliver / অপেক্ষমান{" "}
-                      </h5>
-                    )}
+              <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                Approve for receive / অপেক্ষমান{" "}
+              </h5>
 
-                    <ul className="flex gap-x-4 flex-wrap">
-                      <li className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  ">
-                        {" "}
-                        <div className=" items-center flex h-[80px] pl-1 space-x-2">
-                          <div className="flex-shrink-0">
-                            <img
-                              className="w-12 h-12 rounded-sm"
-                              src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
-                              alt="Bonnie image"
-                            />
+              <ul className="flex gap-x-4 flex-wrap">
+                {getApply &&
+                  getApply.map((ap, i) => (
+                    <>
+                      {ap.claimerEmail ===
+                        reduxReturnData.userStoreData.userInfo.email && (
+                        <li
+                          key={i}
+                          className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
+                        >
+                          {""}
+                          <div className=" items-center flex h-[80px] pl-1 space-x-2">
+                            <div className="flex-shrink-0  shadow-2x">
+                              <img
+                                className="w-12 h-12 rounded-full "
+                                src="react.svg"
+                                alt="Bonnie image"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0 relative ">
+                              <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                {ap.category}{" "}
+                              </p>
+                              <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                                "{ap.subcat}"
+                              </p>
+                              <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                                Finder: "{ap.finderName}"
+                              </p>
+                              <p className="text-[10px] absolute top-0 right-1 text-cyan-500 truncate dark:text-cyan-400">
+                                Status:{" "}
+                                <span className="text-sky-200 font-bold">
+                                  {ap.confirm}
+                                </span>
+                              </p>
+                              <p
+                                onClick={() => aplyShow(ap.itemId)}
+                                className="text-[14px] cursor-pointer text-cyan-500 truncate dark:text-cyan-400"
+                              >
+                                Id: {JSON.stringify(ap.itemId).slice(-9)}
+                              </p>
+                              {ap.opt && (
+                                <>
+                                  {" "}
+                                  <span className="animate-ping top-0 right-0 absolute inline-flex h-[10px] w-[10px]  rounded-full bg-sky-400 opacity-75"></span>
+                                  <span className=" top-0 right-0 absolute inline-flex h-[10px] w-[10px]  rounded-full bg-sky-500 opacity-75"></span>{" "}
+                                </>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                              Mobile
-                            </p>
-                            <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
-                              "Nokia"
-                            </p>
-                            <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
-                              Owner: "Salauddin"
-                            </p>
-                            <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
-                              Comment: "Good "
-                            </p>
-                          </div>
-                        </div>{" "}
-                      </li>
-                    </ul>
-                  </>
-                ))}
+                        </li>
+                      )}
+                    </>
+                  ))}
+              </ul>
             </div>
 
+            <div className="w-[700px] h-[140px] mt-14 border border-gray-600 rounded-md p-[4px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+              <>
+                <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                  Approve for delivery / অপেক্ষমান{" "}
+                </h5>
+
+                <ul className="flex gap-x-4 flex-wrap">
+                  {getApply &&
+                    getApply.map((ap, i) => (
+                      <>
+                        {ap.finderEmail ===
+                          reduxReturnData.userStoreData.userInfo.email && (
+                          <li
+                            key={i}
+                            className="rounded-md hover:scale-105 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
+                          >
+                            {" "}
+                            <div className=" items-center flex h-[100px] pl-1 space-x-2">
+                              <div className="flex-shrink-0">
+                                <img
+                                  className="w-12 h-12 rounded-sm"
+                                  src="react.svg"
+                                  alt="Bonnie image"
+                                />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                  {ap.category}
+                                </p>
+                                <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                                  "{ap.subcat}"
+                                </p>
+                                <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                                  Claimer: "{ap.claimerName}"
+                                </p>
+                                <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                                  Status:{" "}
+                                  <span className="text-sky-200">
+                                    {ap.confirm}
+                                  </span>
+                                </p>
+                                <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                                  Id:{" "}
+                                  <span className="text-sky-200">
+                                    {" "}
+                                    {JSON.stringify(ap.itemId).slice(-9)}
+                                  </span>
+                                </p>
+                              </div>
+                            </div>{" "}
+                          </li>
+                        )}
+                      </>
+                    ))}
+                </ul>
+              </>
+            </div>
+
+            {apforreceiveShow && (
+              <div className="translate-y-[-337px]  translate-x-[-12px]">
+                <Cardx dat={apforreceive} />
+
+                <div
+                  onClick={() => setApforreceiveShow(false)}
+                  className="w-[14px]  rounded-full absolute top-1 right-[1px] flex justify-center items-center  h-[98%]  text-red-700 hover:text-white  hover:bg-red-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm   dark:text-red-500 dark:hover:text-white dark:hover:bg-red-500 dark:focus:ring-blue-800 "
+                >
+                  X
+                </div>
+              </div>
+            )}
             {myPostCard && (
               <div className="translate-y-[-337px]  translate-x-[-12px]">
                 <Card dat={trans} />
@@ -603,7 +714,7 @@ const User = () => {
                             {data.location}
                           </p>
                         </div>
-                      </div>{" "}
+                      </div>
                     </li>
                   ))}
               </ul>

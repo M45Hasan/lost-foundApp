@@ -12,8 +12,9 @@ const newSchema = new Schema({
   finderName: { type: String },
   fiderId: { type: String },
   fiderURL: { type: String },
- mess:{type:String},
- rate:{Type:Number}
+  itemURL: { type: String },
+  mess: { type: String },
+  rate: { Type: String },
 });
 
-module.exports = mongoose.model("Delirevi", newSchema);
+module.exports = mongoose.model("History", newSchema);

@@ -25,7 +25,11 @@ const {
   confdelFn,
   appDel,
   appFun,
-  applGet
+  applGet,
+  apforreceiveFn,
+  emailVeri,
+  otpclaimerFn,
+  history
 } = require("../../controller/regiCon");
 
 _.post("/regi", postController);
@@ -51,5 +55,9 @@ _.post("/confirm", confirmFn);
 _.post("/confrimdelete", confdelFn);
 _.post("/delapplication", appDel);
 _.post("/apply", appFun);
+_.post("/apforreceive", apforreceiveFn);
+_.post("/emailveri", emailVeri);
+_.post("/otpclaimer", otpclaimerFn);
+_.post("/history", history);
 
 module.exports = _;
