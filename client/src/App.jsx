@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 
 
+
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Regi from "./pages/Regi";
@@ -18,7 +19,9 @@ import Admin from "./pages/Admin";
 function App() {
   let router = createBrowserRouter(
     createRoutesFromElements(
+      
       <Route>
+        
         <Route exact  path="/" element={<Regi />} />
         <Route path="/login" element={<Login />} />
         <Route path="/user" element={<User />} />
@@ -26,7 +29,9 @@ function App() {
         <Route path="/term" element={<Term/>} />
         <Route path="/admin" element={<Admin/>} />
         <Route path="*" element={<Navigate to="/login"/>} />
+       
       </Route>
+     
     )
   );
   return (

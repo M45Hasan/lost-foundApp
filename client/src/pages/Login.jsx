@@ -12,7 +12,7 @@ const Login = () => {
   let [errorData, setError] = useState({
     name: "",
     email: "",
-    genErr:""
+    genErr: "",
   });
   let [iCon, setIcon] = useState(false);
   let navigate = useNavigate();
@@ -23,15 +23,12 @@ const Login = () => {
     let { name, value } = e.target;
 
     setData({ ...data, [name]: value });
-    console.log(data);
   };
   // ############################### handle Change function endt#####
-  
+
   //##### Page Navigate Start ####
   useEffect(() => {
     if (Boolean(reduxReturnData.userStoreData.userInfo) === true) {
-     
-
       navigate("/user");
     }
   }, []);
@@ -39,17 +36,21 @@ const Login = () => {
   // ############################### handle submit function start#####
   let handelSubmit = async (e) => {
     e.preventDefault();
+    console.log(data);
     await axios
       .post("http://localhost:5000/lostFound/login", {
         pass: data.pass,
         email: data.email,
       })
       .then((res) => {
-        localStorage.setItem("userInfo", JSON.stringify(res.data));
-        dispatch(activeUser({ user: res.data }));
-        console.log(res);
-
-        navigate("/user");
+        if (!res.data.Error) {
+          localStorage.setItem("userInfo", JSON.stringify(res.data));
+          dispatch(activeUser({ user: res.data }));
+          console.log(res);
+          navigate("/user");
+        } else {
+          setError({...errorData,genErr:res.data.Error});
+        }
       })
       .catch((err) => {
         console.log(err.data);
@@ -85,7 +86,7 @@ const Login = () => {
               >
                 <div>
                   <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Your email
+                   {errorData.genErr ? <span className="text-red-400">{errorData.genErr}</span>: <p>Your email</p> }
                   </label>
                   <input
                     type="email"
@@ -160,14 +161,14 @@ const Login = () => {
                 </button>
               </div>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                  Create New ?{" "}
-                  <a
-                    href="/ "
-                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                  >
-                    Registration
-                  </a>
-                </p>
+                Create New ?{" "}
+                <a
+                  href="/ "
+                  className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                >
+                  Registration
+                </a>
+              </p>
             </div>
           </div>
         </div>

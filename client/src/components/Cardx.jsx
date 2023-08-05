@@ -58,7 +58,7 @@ const Cardx = (dat) => {
     });
 
     setTimeout(() => {
-      navigate("/");
+      window.location.reload()
     }, 500);
   };
   // claimer thank comment
@@ -72,6 +72,10 @@ const Cardx = (dat) => {
       rate: commGet.rate,
     });
     console.log(commGet);
+    //
+    setTimeout(() => {
+      history.go();
+    }, 500);
   };
   const commFromClaimer = (e) => {
     const { name, value } = e.target;

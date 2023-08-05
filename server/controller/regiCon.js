@@ -10,6 +10,7 @@ const Claim = require("../model/claimModel");
 const Chat = require("../model/chatModal");
 const Application = require("../model/applicationModel");
 const History = require("../model/delrevModel");
+const Cancelhis = require("../model/cancelModal");
 const emailV = require("../utils/emailverfy");
 const { generateAndCopyOTP } = require("../utils/optgen");
 
@@ -48,12 +49,10 @@ const loginController = async (req, res) => {
           email: how[0].email,
           userImg: how[0].photo ? how[0].photo : null,
         });
-      } else {
-        res.json({ error: "Invalid Entry" });
       }
     });
   } else {
-    res.json({ error: "Invalid Entry" });
+    res.json({ Error: "Invalid Information" });
   }
 };
 
@@ -426,7 +425,7 @@ const apforreceiveFn = async (req, res) => {
   }
 };
 //############ Apply for product veri fun end ######
-//############ email verifi start  and otp ######
+//############ email verifi start  and otp match not match ######
 
 const emailVeri = async (req, res) => {
   const { email, itemId, appId } = req.body;
@@ -456,6 +455,7 @@ const otpclaimerFn = async (req, res) => {
       { $set: { confirm: "approved", opt: null } },
       { new: true }
     );
+    emailV(claimerEmail, "Your application approved", "Verification Succeed");
     res.send("Verification Succeed ");
   } else {
     await Application.updateMany(
@@ -463,8 +463,39 @@ const otpclaimerFn = async (req, res) => {
       { $set: { confirm: "cancel", opt: null } },
       { new: true }
     );
-    res.send(" Verification Failed");
   }
+
+  setTimeout(async () => {
+    const how = await Application.find({
+      _id: id,
+      confirm: "cancel",
+      opt: null,
+    });
+
+    if (how.length > 0) {
+      const cd = await new Cancelhis({
+        claimerName: how[0].claimerName,
+        claimerEmail: how[0].claimerEmail,
+        claimerURL: how[0].claimerURL,
+        itemId: how[0].claimItemId,
+        category: how[0].category,
+        subcat: how[0].subcat,
+        finderName: how[0].finderName,
+        fiderId: how[0].fiderId,
+        fiderURL: how[0].fiderURL,
+        itemURL: how[0].itemURL,
+        finderEmail: how[0].finderEmail,
+        confirm: "cancel",
+        opt: null,
+        claimId: how[0].claimId,
+        nid: how[0].nid,
+        mb: how[0].mb,
+      });
+      cd.save();
+
+      await Application.findByIdAndDelete({ _id: id });
+    }
+  }, 4000);
 };
 
 //############ email verifi end ######
@@ -476,12 +507,14 @@ const history = async (req, res) => {
     _id: id,
     claimerEmail: claimerEmail,
   });
-  if (how.length > 0) {
+  console.log(how[0].finderEmail);
+  const lu = await Lostitempost.find({ _id: how[0].itemId });
+  if (how.length > 0 && lu.length > 0) {
     const crt = new History({
       claimerName: how[0].claimerName,
-      claimerEmail: claimerEmail,
+      claimerEmail: how[0].claimerEmail,
       claimerURL: how[0].claimerURL,
-      itemURL: how[0].itemURL,
+      itemURL: lu[0].itImage[0],
       category: how[0].category,
       subcat: how[0].subcat,
       finderName: how[0].finderName,
@@ -489,18 +522,47 @@ const history = async (req, res) => {
       fiderURL: how[0].fiderURL,
       finderEmail: how[0].finderEmail,
       mess: mess,
+      rate: how[0].rate,
     });
     crt.save();
 
-    const lew = await History.findOneAndUpdate(
+    await History.findOneAndUpdate(
       { _id: crt._id },
       { $set: { rate: rate } },
       { new: true }
     );
-    res.send(lew);
+    res.send(crt);
+    setTimeout(async () => {
+      await Application.findByIdAndDelete({ _id: how[0]._id });
+    }, 5000);
+    setTimeout(async () => {
+      await Lostitempost.findByIdAndDelete({ _id: lu[0]._id });
+    }, 6000);
+  }
+};
+//### histoget fn **
+const histogetFn = async (req, res) => {
+  const how = await History.find({});
+  console.log(how.length);
+  if (how.length > 0) {
+    res.send(how);
+  } else {
+    res.json({ error: "No Data found" });
   }
 };
 //############ thankComment history end ######
+//########## cancelget fun start####
+const cancelHisfn = async (req, res) => {
+  const how = await Cancelhis.find({});
+  console.log(how.length);
+  if (how.length > 0) {
+    res.send(how);
+  } else {
+    res.json({ error: "No Data found" });
+  }
+};
+
+//########## cancelget fun end####
 module.exports = {
   postController,
   loginController,
@@ -528,4 +590,6 @@ module.exports = {
   emailVeri,
   otpclaimerFn,
   history,
+  histogetFn,
+  cancelHisfn,
 };

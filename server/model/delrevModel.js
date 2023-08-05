@@ -10,6 +10,7 @@ const newSchema = new Schema({
   category: { type: String },
   subcat: { type: String },
   finderName: { type: String },
+  finderEmail: { type: String },
   fiderId: { type: String },
   fiderURL: { type: String },
   itemURL: { type: String },
