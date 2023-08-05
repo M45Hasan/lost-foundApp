@@ -288,7 +288,20 @@ const User = () => {
   };
   console.log(apforreceive);
   //######### approve for receive end ####
-  //opt
+  //##### history fetch start ####
+  const [histo, setHisto] = useState("");
+  useEffect(() => {
+    const getHis = async () => {
+      const how = await axios.get("http://localhost:5000/lostFound/histoget");
+      console.log(how.data);
+      if (!how.data.error) {
+        setHisto(how.data);
+      }
+    };
+    getHis();
+  }, []);
+  console.log("histo:", histo);
+  //##### history fetch end ####
 
   return (
     <div className="w-full  dark:bg-gray-600 ">
@@ -503,34 +516,42 @@ const User = () => {
                 Delivered to owner
               </h5>
               <ul className="flex gap-x-4 flex-wrap">
-                <>
-                  <li className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  ">
-                    {" "}
-                    <div className=" items-center flex h-[80px] pl-1 space-x-2">
-                      <div className="flex-shrink-0">
-                        <img
-                          className="w-12 h-12 rounded-sm"
-                          src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
-                          alt="Bonnie image"
-                        />
+                {histo &&
+                  histo.map((his, s) => (
+                    <li
+                      key={s}
+                      className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
+                    >
+                      <div className=" items-center flex h-[80px] pl-1 space-x-2">
+                        {reduxReturnData.userStoreData.userInfo.email ===
+                          his.finderEmail && (
+                          <>
+                            <div className="flex-shrink-0">
+                              <img
+                                className="w-12 h-12 rounded-sm"
+                                src={his.itemURL}
+                                alt="Bonnie image"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                {his.category}
+                              </p>
+                              <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                                "{his.subcat}"
+                              </p>
+                              <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                                Owner: "{his.claimerName}"
+                              </p>
+                              <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                                Comment: "{his.mess} "
+                              </p>
+                            </div>
+                          </>
+                        )}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                          Mobile
-                        </p>
-                        <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
-                          "Nokia"
-                        </p>
-                        <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
-                          Owner: "Salauddin"
-                        </p>
-                        <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
-                          Comment: "Good "
-                        </p>
-                      </div>
-                    </div>{" "}
-                  </li>
-                </>
+                    </li>
+                  ))}
               </ul>
             </div>
 
@@ -725,34 +746,41 @@ const User = () => {
                 আমি খুঁজে পেয়েছি
               </h5>
               <ul className="flex  flex-wrap">
-                <li className="rounded-md w-[95%] hover:scale-110 ease-in duration-300 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  ">
-                  {" "}
-                  <div className=" items-start justify-center mt-2 flex  pl-1 space-x-2">
-                    <div className="flex-shrink-0">
-                      <img
-                        className="w-12 h-12 rounded-sm"
-                        src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
-                        alt="Bonnie image"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                        Mobile
-                      </p>
-                      <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
-                        "Nokia"
-                      </p>
-                    </div>
-                  </div>{" "}
-                  <div className="pl-[2px]">
-                    <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
-                      Finder: "Salauddin"
-                    </p>
-                    <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
-                      Comment: "Good "
-                    </p>
-                  </div>
-                </li>
+                {histo &&
+                  histo.map((his, s) => (
+                    <li
+                      key={s}
+                      className="rounded-md w-[95%] hover:scale-110 ease-in duration-300 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
+                    >
+                      {reduxReturnData.userStoreData.userInfo.email ===
+                        his.claimerEmail && (
+                        <>
+                          <div className=" items-start justify-center mt-2 flex  pl-1 space-x-2">
+                            <div className="flex-shrink-0">
+                              <img
+                                className="w-12 h-12 rounded-sm"
+                                src={his.itemURL}
+                                alt="Bonnie image"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                {his.category}
+                              </p>
+                              <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                                "{his.subcat}"
+                              </p>
+                            </div>
+                          </div>{" "}
+                          <div className="pl-[2px]">
+                            <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                              Finder: "{his.finderName}"
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </li>
+                  ))}
               </ul>
             </div>
           </div>

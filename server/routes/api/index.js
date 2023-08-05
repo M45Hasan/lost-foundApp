@@ -29,7 +29,9 @@ const {
   apforreceiveFn,
   emailVeri,
   otpclaimerFn,
-  history
+  history,
+  histogetFn,
+  cancelHisfn,
 } = require("../../controller/regiCon");
 
 _.post("/regi", postController);
@@ -46,6 +48,8 @@ _.post("/claim", claimFn);
 _.get("/claimbd", claimerDb);
 _.get("/messageget", messageGet);
 _.get("/applyget", applGet);
+_.get("/histoget", histogetFn);
+_.get("/cancelget", cancelHisfn);
 
 _.post("/claimerbuttonpost", claimerButton);
 _.post("/messagepost", messagePost);
