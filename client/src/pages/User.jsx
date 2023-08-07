@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 
 import { activePic } from "../slice/picSlice";
+import { activeUser } from "../slice/UserSlice";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import Card from "../components/Card";
@@ -303,490 +304,654 @@ const User = () => {
   console.log("histo:", histo);
   //##### history fetch end ####
 
+  // bar for responsive#####
+  let [menu, setMenu] = useState(false);
+  let [side, setSide] = useState(false);
+  let [open, setOpen] = useState(false);
+  let [mess, setMess] = useState(false);
+  let [info, setInfo] = useState("");
+  let [dot, setDot] = useState(false);
+
+  const menuOpen = () => {
+    setMenu(!menu);
+  };
+  const sideOpen = () => {
+    setSide(!side);
+  };
+
+  const handleOpen = () => {
+    setOpen(!open);
+    setMess(false);
+  };
+
+  useEffect(() => {
+    const getApp = async () => {
+      const how = await axios.get("http://localhost:5000/lostFound/applyget");
+      let arr = [];
+      how.data &&
+        how.data.forEach((item) => {
+          if (
+            (item.claimerEmail ===
+              reduxReturnData.userStoreData.userInfo.email &&
+              item.confirm === "approved" &&
+              item.opt === null) ||
+            (item.finderEmail ===
+              reduxReturnData.userStoreData.userInfo.email &&
+              item.confirm === "approved" &&
+              item.opt === null)
+          ) {
+            arr.push(item);
+          }
+
+          console.log(arr);
+        });
+      setInfo(arr);
+    };
+    getApp();
+  }, []);
+  console.log(info);
+
+  const donateFn = () => {
+    setDot(!dot);
+  };
+
+  let logOut = () => {
+    localStorage.removeItem("userInfo");
+    dispatch(activeUser(null));
+    console.log("Sing Out from:", window.location.pathname.split("/")[1]);
+    navigate("/login");
+  };
   return (
-    <div className="w-full  dark:bg-gray-600 ">
-      <Navbar />
+    <>
+      <div className="w-full  dark:bg-gray-600 ">
+        <Navbar menuOpen={menuOpen} />
 
-      <div className=" flex justify-between  ">
-        <div className="w-[30%] h-full  max-w-sm bg-white border  border-gray-200  shadow dark:bg-gray-800 dark:border-gray-700 relative ">
-          {userModal && (
-            <div className="items-center w-full mr-auto ml-auto  max-w-7xl md:px-12 lg:px-24 absolute z-20 top-[50px] shadow-2xl  border-gray-700 border rounded-full">
-              <div className="grid grid-cols-1 relative">
-                <div className="mt-4 mr-auto mb-4 ml-auto rounded-sm bg-green-400  text-sm max-w-[181px]">
-                  <input
-                    placeholder="User image "
-                    name="userImg"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChangeUser}
-                  />
-                </div>
-                <div
-                  onClick={userModalHide}
-                  className="text-center text-sm font-sans border border-gray-600 rounded-full bg-slate-800 shadow-2xl hover:bg-orange-950 cursor-pointer  font-semibold text-cyan-300 absolute bottom-[-10px] left-[40%]"
-                >
-                  Upload
-                </div>
-              </div>
-            </div>
-          )}
-          <div className="flex flex-col items-center pt-10 relative ">
-            <div className="">
-              <img
-                onClick={userModalShow}
-                // className="w-24 h-24 mb-3 rounded-full  shadow-2xl cursor-pointer "
-                className="flex-shrink-0 object-cover border-[2px] border-gray-600 object-center btn- flex w-16 h-16 mr-auto mb-3 ml-auto rounded-full   shadow-xl"
-                src={userImg ? userImg : "react.svg"}
-                alt="Bonnie image"
-              />
-            </div>
-
-            <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
-              {reduxReturnData.userStoreData.userInfo.displayName}
-            </h5>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              {reduxReturnData.userStoreData.userInfo.email}
-            </span>
-          </div>
-          <div className="mx-4 mt-4 border border-gray-500 rounded-sm shadow-2xl relative ">
-            <h5 className="mb-4 text-md font-medium text-gray-900 dark:text-cyan-500">
-              Lost Item Upload
-            </h5>
-            <form onSubmit={subMit} action="#">
-              <label className="block  text-sm font-medium text-gray-900 dark:text-gray-400">
-                Category
-              </label>
-              <select
-                onChange={getInput}
-                name="category"
-                className=" text-gray-900 text-sm  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        <div className=" flex justify-between  ">
+          {menu && (
+            <div className=" p-2 max-h-full block md:hidden  bg-white border  border-gray-200  shadow dark:bg-gray-800 dark:border-gray-700  ">
+              <button
+                onClick={sideOpen}
+                className="px-1.5 py-[2px] mb-4 rounded-md border-2  border-[#2196F3]  hover:animate-pulse "
               >
-                <option selected>Choose a category</option>
-                <option value="Mobile">Mobile</option>
-                <option value="Electronic">Electronic</option>
-                <option value="Document">Document</option>
-                <option value="Human">Human</option>
-              </select>
-              <label className="block mt-[2px] text-sm font-medium text-gray-900 dark:text-gray-400">
-                Sub-category
-              </label>
-              <input
-                onChange={getInput}
-                name="subcat"
-                type="text"
-                className=" text-gray-900 text-sm  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
-              <label className="block mt-[2px] text-sm font-medium text-gray-900 dark:text-gray-400">
-                Product Details
-              </label>
-              <input
-                onChange={getInput}
-                name="detail"
-                type="text"
-                className=" text-gray-900 text-sm  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
-              <label className="block mt-[2px] text-sm font-medium text-gray-900 dark:text-gray-400">
-                Location
-              </label>
-              <input
-                onChange={getInput}
-                name="location"
-                type="text"
-                className=" text-gray-900 text-sm  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
-              <div className=" mt-2 h-[240px]"></div>
+                <p className="text-md font-serif font-bold text-[#4795EA]">
+                  Profile
+                </p>
+              </button>
+              <button
+                onClick={sideOpen}
+                className="w-[140px] px-1.5 py-[2px] mb-4 rounded-md border-[#2196F3]  border-2 hover:animate-pulse "
+              >
+                <p className="text-md font-serif font-bold text-[#4795EA]">
+                  Lost Item Post
+                </p>
+              </button>
+              <button
+                onClick={sideOpen}
+                className="px-1.5 py-[2px] mb-4 rounded-md border-2  border-[#2196F3] hover:animate-pulse "
+              >
+                <p className="text-md font-serif font-bold text-[#4795EA]">
+                  My Claim
+                </p>
+              </button>
+              <button
+                onClick={sideOpen}
+                className="px-1.5 py-[2px] mb-4 rounded-md border-2  border-[#2196F3] hover:animate-pulse "
+              >
+                <p className="text-md font-serif font-bold text-[#4795EA]">
+                  Profile
+                </p>
+              </button>
 
-              <div>
-                <button
-                  type="submit"
-                  className="w-full  text-white bg-cyan-500 hover:bg-cyan-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium  text-sm px-5 py-2.5 text-center dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-primary-800"
+              <div className=" w-[140px] mt-2 flex gap-x-4 ">
+                <a
+                  href="/user"
+                  className="text-gray-400 font-sans font-semibold "
                 >
-                  Submit
-                </button>
+                  <img
+                    className="w-[30px] h-[30px]"
+                    src="icons8-left-arrow-48.png"
+                  />
+                </a>
+                <a
+                  href="/home"
+                  className="text-gray-400 font-sans font-semibold "
+                >
+                  <img
+                    className="w-[30px] h-[30px]"
+                    src="icons8-right-arrow-48.png"
+                  />
+                </a>
               </div>
-            </form>
-            <button
-              className={`bg-cyan-500 rounded-full hover:bg-purple-700 text-white absolute top-[290px] right-0 py-2 px-2  ${
-                loading ? "cursor-not-allowed opacity-25" : ""
-              }`}
-              onClick={handleClick}
-              disabled={loading}
-            >
-              <img className="w-2 h-2 " src="ref.svg" />
-            </button>
-            <div className="mt-2 h-[240px top-[280px] absolute ">
-              <label className="block mt-[2px] text-sm font-medium text-gray-900 dark:text-gray-400">
-                Upload Image
-              </label>
-              <svg
-                onClick={itemModalShow}
-                className="h-6 w-6 text-gray-400 mx-[25px] top-[70px] left-2 cursor-pointer "
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+
+              <div
+                onClick={handleOpen}
+                className="relative mt-4 cursor-pointer "
               >
                 {" "}
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />{" "}
-                <circle cx="12" cy="13" r="4" />
-              </svg>
-
-              <div className="flex  flex-wrap  mt-2 mx-2 h-[180px] w-[95%]">
-                {url.map((pic, i) => (
-                  <img
-                    key={i}
-                    className=" h-[85px] w-[155px] mx-[5px] "
-                    src={pic}
-                    alt={i}
-                  />
-                ))}
+                {info.length > 0 && (
+                  <span className=" absolute right-[5px] top-[4px] w-[40px] rounded-md h-[40px] opacity-75 bg-cyan-400 animate-ping scale-105 duration-300 ease-in"></span>
+                )}
+                <img
+                  className="w-[50px] h-[50px] hover:scale-105 duration-500"
+                  src="mess.png"
+                />
               </div>
 
-              {itemModal && (
-                <div className="items-center w-full mr-auto ml-auto  max-w-7xl md:px-12 lg:px-18 absolute  top-[50px] z-20 shadow-2xl   rounded-full">
-                  <div className="grid grid-cols-1 relative">
-                    <div className="mt-4 mr-auto mb-4 ml-auto rounded-sm bg-green-400  text-sm max-w-[181px]">
-                      <input
-                        multiple
-                        placeholder="User image "
-                        name="itImage"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChangeItem}
-                      />
-                    </div>
-                    <div
-                      onClick={itemModalHide}
-                      className="text-center text-sm font-sans border border-gray-600 rounded-full bg-slate-800 shadow-2xl hover:bg-orange-950 cursor-pointer  font-semibold text-cyan-300 absolute bottom-[-10px] left-[40%]"
-                    >
-                      Upload
-                    </div>
+              <button
+                onClick={donateFn}
+                className="w-[140px] px-1.5 py-[2px] my-4 rounded-md border-[#2196F3] bg-gradient-to-br  bg-pink-900 border-2 hover:animate-pulse "
+              >
+                <p className="text-md font-serif font-bold text-[#4795EA]">
+                  Donate
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={logOut}
+                className="inline-block mt-6 rounded-full bg-danger px-5 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#dc4c64] transition duration-150 ease-in-out hover:bg-danger-800 hover:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.3),0_4px_18px_0_rgba(220,76,100,0.2)] focus:bg-danger-600 focus:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.3),0_4px_18px_0_rgba(220,76,100,0.2)] focus:outline-none focus:ring-0 active:bg-danger-700 active:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.3),0_4px_18px_0_rgba(220,76,100,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(220,76,100,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.2),0_4px_18px_0_rgba(220,76,100,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.2),0_4px_18px_0_rgba(220,76,100,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.2),0_4px_18px_0_rgba(220,76,100,0.1)]"
+              >
+                <svg
+                  className="h-4 w-4 text-red-500"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  {" "}
+                  <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />{" "}
+                  <path d="M7 12h14l-3 -3m0 6l3 -3" />
+                </svg>
+              </button>
+            </div>
+          )}
+
+          <div className="w-[30%] h-full hidden md:block max-w-sm bg-white border  border-gray-200  shadow dark:bg-gray-800 dark:border-gray-700 relative ">
+            {userModal && (
+              <div className="items-center w-full mr-auto ml-auto  max-w-7xl md:px-12 lg:px-24 absolute z-20 top-[50px] shadow-2xl  border-gray-700 border rounded-full">
+                <div className="grid grid-cols-1 relative">
+                  <div className="mt-4 mr-auto mb-4 ml-auto rounded-sm bg-green-400  text-sm max-w-[181px]">
+                    <input
+                      placeholder="User image "
+                      name="userImg"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChangeUser}
+                    />
+                  </div>
+                  <div
+                    onClick={userModalHide}
+                    className="text-center text-sm font-sans border border-gray-600 rounded-full bg-slate-800 shadow-2xl hover:bg-orange-950 cursor-pointer  font-semibold text-cyan-300 absolute bottom-[-10px] left-[40%]"
+                  >
+                    Upload
                   </div>
                 </div>
-              )}
+              </div>
+            )}
+            <div className="flex flex-col  items-center pt-8 relative ">
+              <div className="">
+                <img
+                  onClick={userModalShow}
+                  // className="w-24 h-24 mb-3 rounded-full  shadow-2xl cursor-pointer "
+                  className="flex-shrink-0 object-cover border-[2px] border-gray-600 object-center  flex w-16 h-16 mr-auto mb-1 ml-auto rounded-full   shadow-xl"
+                  src={userImg ? userImg : "react.svg"}
+                  alt="lost & found"
+                />
+              </div>
+
+              <h5 className="mb-[2px] text-xl font-medium text-gray-900 dark:text-white">
+                {reduxReturnData.userStoreData.userInfo.displayName}
+              </h5>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {reduxReturnData.userStoreData.userInfo.email}
+              </span>
+            </div>
+            <div className="mx-4 mt-4 shadow-gray-600  border-gray-500 rounded-md p-1 shadow-2xl relative ">
+              <h5 className="mb-4 text-md font-medium text-gray-900 dark:text-cyan-500">
+                Lost Item Upload
+              </h5>
+              <form onSubmit={subMit} action="#">
+                <label className="block  text-sm font-medium text-gray-900 dark:text-gray-400">
+                  Category
+                </label>
+                <select
+                  onChange={getInput}
+                  name="category"
+                  className=" text-gray-900 text-sm  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                >
+                  <option selected>Choose a category</option>
+                  <option value="Mobile">Mobile</option>
+                  <option value="Electronic">Electronic</option>
+                  <option value="Document">Document</option>
+                  <option value="Human">Human</option>
+                </select>
+                <label className="block mt-[2px] text-sm font-medium text-gray-900 dark:text-gray-400">
+                  Sub-category
+                </label>
+                <input
+                  onChange={getInput}
+                  name="subcat"
+                  type="text"
+                  className=" text-gray-900 text-sm  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                />
+                <label className="block mt-[2px] text-sm font-medium text-gray-900 dark:text-gray-400">
+                  Product Details
+                </label>
+                <input
+                  onChange={getInput}
+                  name="detail"
+                  type="text"
+                  className=" text-gray-900 text-sm  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                />
+                <label className="block mt-[2px] text-sm font-medium text-gray-900 dark:text-gray-400">
+                  Location
+                </label>
+                <input
+                  onChange={getInput}
+                  name="location"
+                  type="text"
+                  className=" text-gray-900 text-sm  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                />
+                <div className=" mt-2 h-[240px]"></div>
+
+                <div>
+                  <button
+                    type="submit"
+                    className="w-full  text-white bg-cyan-500 hover:bg-cyan-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium  text-sm px-5 py-2.5 text-center dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-primary-800"
+                  >
+                    Submit
+                  </button>
+                </div>
+              </form>
+              <button
+                className={`bg-cyan-500 rounded-full hover:bg-purple-700 text-white absolute top-[292px] right-[2px] py-2 px-2  ${
+                  loading ? "cursor-not-allowed opacity-25" : ""
+                }`}
+                onClick={handleClick}
+                disabled={loading}
+              >
+                <img className="w-2 h-2 " src="ref.svg" />
+              </button>
+              <div className="mt-2 h-[240px top-[280px] absolute ">
+                <label className="block mt-[2px] text-sm font-medium text-gray-900 dark:text-gray-400">
+                  Upload Image
+                </label>
+                <svg
+                  onClick={itemModalShow}
+                  className="h-6 w-6 text-gray-400 mx-[25px] top-[70px] left-2 cursor-pointer "
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  {" "}
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />{" "}
+                  <circle cx="12" cy="13" r="4" />
+                </svg>
+
+                <div className="flex gap flex-wrap  mt-2 mx-2 h-[180px] w-[95%]">
+                  {url.map((pic, i) => (
+                    <img
+                      key={i}
+                      className=" h-[85px] w-[120px] rounded-md  mx-[5px] "
+                      src={pic}
+                      alt={i}
+                    />
+                  ))}
+                </div>
+
+                {itemModal && (
+                  <div className="items-center w-full mr-auto ml-auto  max-w-7xl md:px-12 lg:px-18 absolute  top-[50px] z-20 shadow-2xl   rounded-full">
+                    <div className="grid grid-cols-1 relative">
+                      <div className="mt-4 mr-auto mb-4 ml-auto rounded-sm bg-green-400  text-sm max-w-[181px]">
+                        <input
+                          multiple
+                          placeholder="User image "
+                          name="itImage"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChangeItem}
+                        />
+                      </div>
+                      <div
+                        onClick={itemModalHide}
+                        className="text-center text-sm font-sans border border-gray-600 rounded-full bg-slate-800 shadow-2xl hover:bg-orange-950 cursor-pointer  font-semibold text-cyan-300 absolute bottom-[-10px] left-[40%]"
+                      >
+                        Upload
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-        <div className="w-full flex  ">
-          <div className="w-[70%] relative p-4">
-            <div className="w-[700px] mt-10  border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
-              <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-                My Post Item
-              </h5>
-              <ul className="flex gap-x-4 flex-wrap">
-                {postList &&
-                  postList.map((data, i) => (
-                    <li
-                      key={i}
-                      // onClick={(item) => (setMyPostCard(true),console.log(item))}
-                      onClick={() => logOn(data)}
-                      className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
-                    >
-                      {" "}
-                      <div className=" items-center flex h-[80px] pl-1 space-x-2">
-                        <div key={u} className="flex-shrink-0">
-                          <img
-                            className="w-12 h-12 rounded-sm"
-                            src={data.itImage[0]}
-                            alt={""}
-                          />
-                        </div>
 
-                        <div className="flex-1 min-w-[140px]">
-                          <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                            {data.category}
-                          </p>
-                          <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
-                            {data.subcat}
-                          </p>
-                          <p className="text-[10px] text-cyan-500 truncate dark:text-cyan-400">
-                            {data.location}
-                          </p>
-                        </div>
-                      </div>{" "}
-                    </li>
-                  ))}
-              </ul>
-            </div>
-
-            <div className="w-[700px] mt-14 border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
-              <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-                Delivered to owner
-              </h5>
-              <ul className="flex gap-x-4 flex-wrap">
-                {histo &&
-                  histo.map((his, s) => (
-                    <li
-                      key={s}
-                      className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
-                    >
-                      <div className=" items-center flex h-[80px] pl-1 space-x-2">
-                        {reduxReturnData.userStoreData.userInfo.email ===
-                          his.finderEmail && (
-                          <>
-                            <div className="flex-shrink-0">
-                              <img
-                                className="w-12 h-12 rounded-sm"
-                                src={his.itemURL}
-                                alt="Bonnie image"
-                              />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                {his.category}
-                              </p>
-                              <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
-                                "{his.subcat}"
-                              </p>
-                              <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
-                                Owner: "{his.claimerName}"
-                              </p>
-                              <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
-                                Comment: "{his.mess} "
-                              </p>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-
-            <div className="w-[700px] mt-14 border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
-              <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-                Approve for receive / অপেক্ষমান{" "}
-              </h5>
-
-              <ul className="flex gap-x-4 flex-wrap">
-                {getApply &&
-                  getApply.map((ap, i) => (
-                    <>
-                      {ap.claimerEmail ===
-                        reduxReturnData.userStoreData.userInfo.email && (
-                        <li
-                          key={i}
-                          className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
-                        >
-                          {""}
-                          <div className=" items-center flex h-[80px] pl-1 space-x-2">
-                            <div className="flex-shrink-0  shadow-2x">
-                              <img
-                                className="w-12 h-12 rounded-full "
-                                src="react.svg"
-                                alt="Bonnie image"
-                              />
-                            </div>
-                            <div className="flex-1 min-w-0 relative ">
-                              <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                {ap.category}{" "}
-                              </p>
-                              <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
-                                "{ap.subcat}"
-                              </p>
-                              <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
-                                Finder: "{ap.finderName}"
-                              </p>
-                              <p className="text-[10px] absolute top-0 right-1 text-cyan-500 truncate dark:text-cyan-400">
-                                Status:{" "}
-                                <span className="text-sky-200 font-bold">
-                                  {ap.confirm}
-                                </span>
-                              </p>
-                              <p
-                                onClick={() => aplyShow(ap.itemId)}
-                                className="text-[14px] cursor-pointer text-cyan-500 truncate dark:text-cyan-400"
-                              >
-                                Id: {JSON.stringify(ap.itemId).slice(-9)}
-                              </p>
-                              {ap.opt && (
-                                <>
-                                  {" "}
-                                  <span className="animate-ping top-0 right-0 absolute inline-flex h-[10px] w-[10px]  rounded-full bg-sky-400 opacity-75"></span>
-                                  <span className=" top-0 right-0 absolute inline-flex h-[10px] w-[10px]  rounded-full bg-sky-500 opacity-75"></span>{" "}
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        </li>
-                      )}
-                    </>
-                  ))}
-              </ul>
-            </div>
-
-            <div className="w-[700px] h-[140px] mt-14 border border-gray-600 rounded-md p-[4px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
-              <>
+          <div className="w-full flex  ">
+            <div className="w-[70%] relative p-4">
+              <div className="w-[700px] mt-10  border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
                 <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-                  Approve for delivery / অপেক্ষমান{" "}
+                  My Post Item
+                </h5>
+                <ul className="flex gap-x-4 flex-wrap">
+                  {postList &&
+                    postList.map((data, i) => (
+                      <li
+                        key={i}
+                        // onClick={(item) => (setMyPostCard(true),console.log(item))}
+                        onClick={() => logOn(data)}
+                        className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
+                      >
+                        {" "}
+                        <div className=" items-center flex h-[80px] pl-1 space-x-2">
+                          <div key={u} className="flex-shrink-0">
+                            <img
+                              className="w-12 h-12 rounded-sm"
+                              src={data.itImage[0]}
+                              alt={""}
+                            />
+                          </div>
+
+                          <div className="flex-1 min-w-[140px]">
+                            <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              {data.category}
+                            </p>
+                            <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                              {data.subcat}
+                            </p>
+                            <p className="text-[10px] text-cyan-500 truncate dark:text-cyan-400">
+                              {data.location}
+                            </p>
+                          </div>
+                        </div>{" "}
+                      </li>
+                    ))}
+                </ul>
+              </div>
+
+              <div className="w-[700px] mt-14 border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+                <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                  Delivered to owner
+                </h5>
+                <ul className="flex gap-x-4 flex-wrap">
+                  {histo &&
+                    histo.map((his, s) => (
+                      <li
+                        key={s}
+                        className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
+                      >
+                        <div className=" items-center flex h-[80px] pl-1 space-x-2">
+                          {reduxReturnData.userStoreData.userInfo.email ===
+                            his.finderEmail && (
+                            <>
+                              <div className="flex-shrink-0">
+                                <img
+                                  className="w-12 h-12 rounded-sm"
+                                  src={his.itemURL}
+                                  alt="Bonnie image"
+                                />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                  {his.category}
+                                </p>
+                                <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                                  "{his.subcat}"
+                                </p>
+                                <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                                  Owner: "{his.claimerName}"
+                                </p>
+                                <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                                  Comment: "{his.mess} "
+                                </p>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+
+              <div className="w-[700px] mt-14 border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+                <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                  Approve for receive / অপেক্ষমান{" "}
                 </h5>
 
                 <ul className="flex gap-x-4 flex-wrap">
                   {getApply &&
                     getApply.map((ap, i) => (
                       <>
-                        {ap.finderEmail ===
+                        {ap.claimerEmail ===
                           reduxReturnData.userStoreData.userInfo.email && (
                           <li
                             key={i}
-                            className="rounded-md hover:scale-105 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
+                            className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
                           >
-                            {" "}
-                            <div className=" items-center flex h-[100px] pl-1 space-x-2">
-                              <div className="flex-shrink-0">
+                            {""}
+                            <div className=" items-center flex h-[80px] pl-1 space-x-2">
+                              <div className="flex-shrink-0  shadow-2x">
                                 <img
-                                  className="w-12 h-12 rounded-sm"
+                                  className="w-12 h-12 rounded-full "
                                   src="react.svg"
                                   alt="Bonnie image"
                                 />
                               </div>
-                              <div className="flex-1 min-w-0">
+                              <div className="flex-1 min-w-0 relative ">
                                 <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                  {ap.category}
+                                  {ap.category}{" "}
                                 </p>
                                 <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
                                   "{ap.subcat}"
                                 </p>
                                 <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
-                                  Claimer: "{ap.claimerName}"
+                                  Finder: "{ap.finderName}"
                                 </p>
-                                <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                                <p className="text-[10px] absolute top-0 right-1 text-cyan-500 truncate dark:text-cyan-400">
                                   Status:{" "}
-                                  <span className="text-sky-200">
+                                  <span className="text-sky-200 font-bold">
                                     {ap.confirm}
                                   </span>
                                 </p>
-                                <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
-                                  Id:{" "}
-                                  <span className="text-sky-200">
-                                    {" "}
-                                    {JSON.stringify(ap.itemId).slice(-9)}
-                                  </span>
+                                <p
+                                  onClick={() => aplyShow(ap.itemId)}
+                                  className="text-[14px] cursor-pointer text-cyan-500 truncate dark:text-cyan-400"
+                                >
+                                  Id: {JSON.stringify(ap.itemId).slice(-9)}
                                 </p>
+                                {ap.opt && (
+                                  <>
+                                    {" "}
+                                    <span className="animate-ping top-0 right-0 absolute inline-flex h-[10px] w-[10px]  rounded-full bg-sky-400 opacity-75"></span>
+                                    <span className=" top-0 right-0 absolute inline-flex h-[10px] w-[10px]  rounded-full bg-sky-500 opacity-75"></span>{" "}
+                                  </>
+                                )}
                               </div>
-                            </div>{" "}
+                            </div>
                           </li>
                         )}
                       </>
                     ))}
                 </ul>
-              </>
-            </div>
-
-            {apforreceiveShow && (
-              <div className="translate-y-[-337px]  translate-x-[-12px]">
-                <Cardx dat={apforreceive} />
-
-                <div
-                  onClick={() => setApforreceiveShow(false)}
-                  className="w-[14px]  rounded-full absolute top-1 right-[1px] flex justify-center items-center  h-[98%]  text-red-700 hover:text-white  hover:bg-red-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm   dark:text-red-500 dark:hover:text-white dark:hover:bg-red-500 dark:focus:ring-blue-800 "
-                >
-                  X
-                </div>
               </div>
-            )}
-            {myPostCard && (
-              <div className="translate-y-[-337px]  translate-x-[-12px]">
-                <Card dat={trans} />
 
-                <div
-                  onClick={() => setMyPostCard(false)}
-                  className="w-[14px]  rounded-full absolute top-1 right-[1px] flex justify-center items-center  h-[98%]  text-red-700 hover:text-white  hover:bg-red-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm   dark:text-red-500 dark:hover:text-white dark:hover:bg-red-500 dark:focus:ring-blue-800 "
-                >
-                  X
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="w-[28%] p-4">
-            <div className="w-[220px] mt-10  border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
-              <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-                My Claim
-              </h5>
-              <ul className="flex gap-x-4 flex-wrap">
-                {myClaim &&
-                  myClaim.map((data, i) => (
-                    <li
-                      key={i}
-                      // onClick={(item) => (setMyPostCard(true),console.log(item))}
-                      onClick={() => logOn(data)}
-                      className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
-                    >
-                      {" "}
-                      <div className=" items-center flex h-[80px] pl-1 space-x-2">
-                        <div key={u} className="flex-shrink-0">
-                          <img
-                            className="w-12 h-12 rounded-sm"
-                            src={data.itImage[0]}
-                            alt={""}
-                          />
-                        </div>
+              <div className="w-[700px] h-[140px] mt-14 border border-gray-600 rounded-md p-[4px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+                <>
+                  <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                    Approve for delivery / অপেক্ষমান{" "}
+                  </h5>
 
-                        <div className="flex-1 min-w-[140px]">
-                          <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                            {data.category}
-                          </p>
-                          <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
-                            {data.subcat}
-                          </p>
-                          <p className="text-[10px] text-cyan-500 truncate dark:text-cyan-400">
-                            {data.location}
-                          </p>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-
-            <div className="w-[220px] mt-4 border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
-              <h5 className=" text-md mb-2 text-center font-bold tracking-tight text-gray-900 dark:text-white">
-                আমি খুঁজে পেয়েছি
-              </h5>
-              <ul className="flex  flex-wrap">
-                {histo &&
-                  histo.map((his, s) => (
-                    <li
-                      key={s}
-                      className="rounded-md w-[95%] hover:scale-110 ease-in duration-300 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
-                    >
-                      {reduxReturnData.userStoreData.userInfo.email ===
-                        his.claimerEmail && (
+                  <ul className="flex gap-x-4 flex-wrap">
+                    {getApply &&
+                      getApply.map((ap, i) => (
                         <>
-                          <div className=" items-start justify-center mt-2 flex  pl-1 space-x-2">
-                            <div className="flex-shrink-0">
-                              <img
-                                className="w-12 h-12 rounded-sm"
-                                src={his.itemURL}
-                                alt="Bonnie image"
-                              />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                {his.category}
-                              </p>
-                              <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
-                                "{his.subcat}"
-                              </p>
-                            </div>
-                          </div>{" "}
-                          <div className="pl-[2px]">
-                            <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
-                              Finder: "{his.finderName}"
+                          {ap.finderEmail ===
+                            reduxReturnData.userStoreData.userInfo.email && (
+                            <li
+                              key={i}
+                              className="rounded-md hover:scale-105 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
+                            >
+                              {" "}
+                              <div className=" items-center flex h-[100px] pl-1 space-x-2">
+                                <div className="flex-shrink-0">
+                                  <img
+                                    className="w-12 h-12 rounded-sm"
+                                    src="react.svg"
+                                    alt="Bonnie image"
+                                  />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                    {ap.category}
+                                  </p>
+                                  <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                                    "{ap.subcat}"
+                                  </p>
+                                  <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                                    Claimer: "{ap.claimerName}"
+                                  </p>
+                                  <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                                    Status:{" "}
+                                    <span className="text-sky-200">
+                                      {ap.confirm}
+                                    </span>
+                                  </p>
+                                  <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                                    Id:{" "}
+                                    <span className="text-sky-200">
+                                      {" "}
+                                      {JSON.stringify(ap.itemId).slice(-9)}
+                                    </span>
+                                  </p>
+                                </div>
+                              </div>{" "}
+                            </li>
+                          )}
+                        </>
+                      ))}
+                  </ul>
+                </>
+              </div>
+
+              {apforreceiveShow && (
+                <div className="translate-y-[-337px]  translate-x-[-12px]">
+                  <Cardx dat={apforreceive} />
+
+                  <div
+                    onClick={() => setApforreceiveShow(false)}
+                    className="w-[14px]  rounded-full absolute top-1 right-[1px] flex justify-center items-center  h-[98%]  text-red-700 hover:text-white  hover:bg-red-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm   dark:text-red-500 dark:hover:text-white dark:hover:bg-red-500 dark:focus:ring-blue-800 "
+                  >
+                    X
+                  </div>
+                </div>
+              )}
+              {myPostCard && (
+                <div className="fixed top-[50px] right-[200px] w-[800px]">
+                  <Card dat={trans} />
+
+                  <div
+                    onClick={() => setMyPostCard(false)}
+                    className="w-[14px]  rounded-full absolute top-[42px] right-[1px] flex justify-center items-center  h-[92%]  text-red-700 hover:text-white  hover:bg-red-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm   dark:text-red-500 dark:hover:text-white dark:hover:bg-red-500 dark:focus:ring-blue-800 "
+                  >
+                    X
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="w-[28%] p-4">
+              <div className="w-[220px] mt-10  border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+                <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                  My Claim
+                </h5>
+                <ul className="flex gap-x-4 flex-wrap">
+                  {myClaim &&
+                    myClaim.map((data, i) => (
+                      <li
+                        key={i}
+                        // onClick={(item) => (setMyPostCard(true),console.log(item))}
+                        onClick={() => logOn(data)}
+                        className="rounded-md hover:scale-110 ease-in duration-100 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
+                      >
+                        {" "}
+                        <div className=" items-center flex h-[80px] pl-1 space-x-2">
+                          <div key={u} className="flex-shrink-0">
+                            <img
+                              className="w-12 h-12 rounded-sm"
+                              src={data.itImage[0]}
+                              alt={""}
+                            />
+                          </div>
+
+                          <div className="flex-1 min-w-[140px]">
+                            <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              {data.category}
+                            </p>
+                            <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                              {data.subcat}
+                            </p>
+                            <p className="text-[10px] text-cyan-500 truncate dark:text-cyan-400">
+                              {data.location}
                             </p>
                           </div>
-                        </>
-                      )}
-                    </li>
-                  ))}
-              </ul>
+                        </div>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+
+              <div className="w-[220px] mt-4 border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
+                <h5 className=" text-md mb-2 text-center font-bold tracking-tight text-gray-900 dark:text-white">
+                  আমি খুঁজে পেয়েছি
+                </h5>
+                <ul className="flex  flex-wrap">
+                  {histo &&
+                    histo.map((his, s) => (
+                      <li
+                        key={s}
+                        className="rounded-md w-[95%] hover:scale-110 ease-in duration-300 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]  "
+                      >
+                        {reduxReturnData.userStoreData.userInfo.email ===
+                          his.claimerEmail && (
+                          <>
+                            <div className=" items-start justify-center mt-2 flex  pl-1 space-x-2">
+                              <div className="flex-shrink-0">
+                                <img
+                                  className="w-12 h-12 rounded-sm"
+                                  src={his.itemURL}
+                                  alt="Bonnie image"
+                                />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                  {his.category}
+                                </p>
+                                <p className="text-sm text-cyan-500 truncate dark:text-cyan-400">
+                                  "{his.subcat}"
+                                </p>
+                              </div>
+                            </div>{" "}
+                            <div className="pl-[2px]">
+                              <p className="text-[14px] text-cyan-500 truncate dark:text-cyan-400">
+                                Finder: "{his.finderName}"
+                              </p>
+                            </div>
+                          </>
+                        )}
+                      </li>
+                    ))}
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

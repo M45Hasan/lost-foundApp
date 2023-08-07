@@ -323,7 +323,7 @@ const Home = () => {
 
           <button
             onClick={() => setMyPostCard(false)}
-            className="w-[20px]  rounded-full absolute top-[45px] right-[5px] z-30  h-[20px]  text-red-700 hover:text-white  hover:bg-red-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm   dark:text-red-500 dark:hover:text-white dark:hover:bg-red-500 dark:focus:ring-blue-800 "
+            className="w-[14px]  rounded-full absolute top-[42px] right-[1px] flex justify-center items-center  h-[92%]  text-red-700 hover:text-white  hover:bg-red-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium  text-sm  text-center roundes-sm   dark:text-red-500 dark:hover:text-white dark:hover:bg-red-500 dark:focus:ring-blue-800 "
           >
             X
           </button>

@@ -6,7 +6,7 @@ import axios from "axios";
 import MessReadModal from "./MessReadModal";
 import Donate from "./Donate";
 
-const Navbar = () => {
+const Navbar = ({ menuOpen }) => {
   let navigate = useNavigate();
   let dispatch = useDispatch();
   let reduxReturnData = useSelector((state) => state);
@@ -67,10 +67,11 @@ const Navbar = () => {
   const donateFn = () => {
     setDot(!dot);
   };
+
   return (
     <div>
       <nav className="bg-white dark:bg-gray-900  w-full top-0 left-0 border-b border-gray-200 dark:border-gray-600">
-        <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <div className="max-w-screen-xl md:flex flex-wrap items-center hidden md:block justify-between mx-auto p-4">
           <div>
             <img
               src="lost.png"
@@ -79,32 +80,36 @@ const Navbar = () => {
             />
           </div>
           <div className="w-[300px] flex justify-between  ">
-            <div className=" w-[140px] flex justify-between ">
+            <div className="  mt-2 flex gap-x-6 ">
               <a
                 href="/user"
                 className="text-gray-400 font-sans font-semibold "
               >
-                {" "}
-                User{" "}
+                <img
+                  className="w-[30px] h-[30px]"
+                  src="icons8-left-arrow-48.png"
+                />
               </a>
               <a
                 href="/home"
                 className="text-gray-400 font-sans font-semibold "
               >
-                {" "}
-                Lost Item{" "}
+                <img
+                  className="w-[30px] h-[30px]"
+                  src="icons8-right-arrow-48.png"
+                />
               </a>
             </div>
             <div
               onClick={handleOpen}
-              className="relative rounded-md border border-cyan-400 cursor-pointer "
+              className="relative  cursor-pointer "
             >
               {" "}
               {info.length > 0 && (
-                <span className=" absolute right-[5px] top-[4px] w-[20px] rounded-md h-[20px] opacity-75 bg-cyan-400 animate-ping scale-105 duration-300 ease-in"></span>
+                <span className=" absolute right-[5px] top-[4px] w-[30px] rounded-md h-[30px] opacity-75 bg-cyan-400 animate-ping scale-105 duration-300 ease-in"></span>
               )}
               <img
-                className="w-[30px] h-[30px] hover:scale-105 duration-500"
+                className="w-[40px] h-[40px] hover:scale-105 duration-500"
                 src="mess.png"
               />
             </div>
@@ -136,6 +141,24 @@ const Navbar = () => {
               <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />{" "}
               <path d="M7 12h14l-3 -3m0 6l3 -3" />
             </svg>
+          </button>
+        </div>
+
+        <div className="max-w-screen-xl flex flex-wrap items-center block md:hidden justify-between mx-auto p-4">
+          <div>
+            <img
+              src="lost.png"
+              className="h-8 sm:h-8 mr-3 rounded-md opacity-70"
+              alt="Flowbite Logo"
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={menuOpen}
+            className="inline-block rounded-full bg-danger px-3 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#dc4c64] transition duration-150 ease-in-out hover:bg-danger-800 hover:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.3),0_4px_18px_0_rgba(220,76,100,0.2)] focus:bg-danger-600 focus:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.3),0_4px_18px_0_rgba(220,76,100,0.2)] focus:outline-none focus:ring-0 active:bg-danger-700 active:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.3),0_4px_18px_0_rgba(220,76,100,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(220,76,100,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.2),0_4px_18px_0_rgba(220,76,100,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.2),0_4px_18px_0_rgba(220,76,100,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.2),0_4px_18px_0_rgba(220,76,100,0.1)]"
+          >
+            <img className="h-[25px] bg-gray-400 rounded-lg " src="bar.svg" />
           </button>
         </div>
       </nav>

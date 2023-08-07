@@ -132,17 +132,17 @@ export const Regi = () => {
 
   return (
     <>
-      <section className="bg-gray-50 dark:bg-gray-900 ">
-        <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-          <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+      <section className="bg-gray-50 dark:bg-gray-900  ">
+        <div className="flex flex-col items-center justify-center md:px-6 md:py-8 mx-auto md:h-screen lg:py-0">
+          <div className="w-full bg-white rounded-lg shadow  border-t-0 md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
             <div className="  ">
               <img
-                className="w-full h-[75px] rounded-xl opacity-50 "
+                className="w-full  md:rounded-xl shadow-cyan-200 shadow-xl rounded-b-sm border-t-[1px] rounded-t-[0] opacity-50 "
                 src="lost.png"
                 alt="logo"
               />
-              <p className="text-md font-bold   text-gray-900  dark:text-white text-center">
-                "LostNoMore: Your Trusted Companion for Lost items"
+              <p className="text-sm font-bold sm:pl-8 pl-6  text-gray-900  dark:text-white">
+                 Your Trusted Companion for Lost items
               </p>
             </div>
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
