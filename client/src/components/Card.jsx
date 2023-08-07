@@ -285,8 +285,8 @@ export const Card = (dat) => {
         <div className=" w-[50%]  dark:bg-gray-700 h-full">
           <div className="h-[400px] flex items-center justify-center">
             <img
-              className="w-[330px] rounded-lg object-cover  shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ease-in-out duration-500 hover:scale-110  "
-              src={slideUrl}
+              className="w-[330px] h-[350px] rounded-lg   shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ease-in-out duration-500 hover:scale-110  "
+              src={slideUrl ?slideUrl:dat.dat.itImage[0] }
               alt="Product Image 1"
             />
           </div>
