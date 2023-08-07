@@ -10,6 +10,8 @@ const Admin = () => {
 
   //push data
   const handlePush = (info) => {
+
+    
     setPush(info);
   };
 
@@ -21,6 +23,7 @@ const Admin = () => {
       }
     };
     getApplication();
+
   }, []);
 
   useEffect(() => {

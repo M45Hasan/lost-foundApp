@@ -307,6 +307,7 @@ const User = () => {
   // bar for responsive#####
   let [menu, setMenu] = useState(false);
   let [side, setSide] = useState(false);
+  
   let [open, setOpen] = useState(false);
   let [mess, setMess] = useState(false);
   let [info, setInfo] = useState("");
@@ -315,9 +316,11 @@ const User = () => {
   const menuOpen = () => {
     setMenu(!menu);
   };
+
   const sideOpen = () => {
     setSide(!side);
   };
+  
 
   const handleOpen = () => {
     setOpen(!open);
@@ -364,45 +367,55 @@ const User = () => {
   return (
     <>
       <div className="w-full  dark:bg-gray-600 ">
-        <Navbar menuOpen={menuOpen} />
+        <Navbar   menuOpen={menuOpen} />
 
-        <div className=" flex justify-between  ">
+        <div className=" flex justify-between relative ">
+        
           {menu && (
-            <div className=" p-2 max-h-full block md:hidden  bg-white border  border-gray-200  shadow dark:bg-gray-800 dark:border-gray-700  ">
-              <button
-                onClick={sideOpen}
-                className="px-1.5 py-[2px] mb-4 rounded-md border-2  border-[#2196F3]  hover:animate-pulse "
-              >
-                <p className="text-md font-serif font-bold text-[#4795EA]">
-                  Profile
-                </p>
-              </button>
-              <button
-                onClick={sideOpen}
-                className="w-[140px] px-1.5 py-[2px] mb-4 rounded-md border-[#2196F3]  border-2 hover:animate-pulse "
-              >
-                <p className="text-md font-serif font-bold text-[#4795EA]">
-                  Lost Item Post
-                </p>
-              </button>
-              <button
-                onClick={sideOpen}
-                className="px-1.5 py-[2px] mb-4 rounded-md border-2  border-[#2196F3] hover:animate-pulse "
-              >
-                <p className="text-md font-serif font-bold text-[#4795EA]">
-                  My Claim
-                </p>
-              </button>
-              <button
-                onClick={sideOpen}
-                className="px-1.5 py-[2px] mb-4 rounded-md border-2  border-[#2196F3] hover:animate-pulse "
-              >
-                <p className="text-md font-serif font-bold text-[#4795EA]">
-                  Profile
-                </p>
-              </button>
+            <div  className=" p-2 w-[180px] h-[600px] block md:hidden  bg-white border  border-gray-200  shadow dark:bg-gray-800 dark:border-gray-700  ">
 
-              <div className=" w-[140px] mt-2 flex gap-x-4 ">
+            {userModal && (
+             
+                <div className=" fixed z-20 top-[148px]">
+                  <div className="mb-[10px]   rounded-md border-b-0 bg-green-400  text-sm max-w-[140px] overflow-x-hidden">
+                    <input
+                    className="text-sm"
+                      placeholder="User image "
+                      name="userImg" 
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChangeUser}
+                    />
+                  </div>
+                  <div
+                    onClick={userModalHide}
+                    className="text-center w-full text-sm font-sans border border-gray-600 rounded-md bg-slate-800 shadow-2xl hover:bg-orange-950 cursor-pointer  font-semibold text-cyan-300 absolute bottom-[-10px] "
+                  >
+                    Upload
+                  </div>
+                </div>
+              
+            )}
+            <div className="flex flex-col  items-center pt-1 relative ">
+              <div className="">
+                <img
+                  onClick={()=>setUserModal(!userModal)}
+                  // className="w-24 h-24 mb-3 rounded-full  shadow-2xl cursor-pointer "
+                  className="flex-shrink-0 object-cover border-[2px] border-gray-600 object-center  flex w-16 h-16 mr-auto mb-1 ml-auto rounded-full   shadow-xl"
+                  src={userImg ? userImg : "react.svg"}
+                  alt="lost & found"
+                />
+              </div>
+
+              <h5 className="mb-[] text-base font-medium text-gray-900 dark:text-white">
+                {reduxReturnData.userStoreData.userInfo.displayName}
+              </h5>
+              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-4">
+                {reduxReturnData.userStoreData.userInfo.email}
+              </span>
+            </div>
+
+            <div className=" w-[140px] mb-[20px] flex gap-x-6 justify-center ">
                 <a
                   href="/user"
                   className="text-gray-400 font-sans font-semibold "
@@ -422,6 +435,25 @@ const User = () => {
                   />
                 </a>
               </div>
+              <button
+                onClick={sideOpen}
+                className="w-[140px] px-1.5 py-[2px] mb-4 rounded-md border-[#2196F3]  border-2 hover:animate-pulse "
+              >
+                <p className="text-md font-serif font-bold text-[#4795EA]">
+                  Lost Item Post
+                </p>
+              </button>
+              <button
+                onClick={sideOpen}
+                className="px-1.5 py-[2px] mb-4 rounded-md border-2  border-[#2196F3] hover:animate-pulse "
+              >
+                <p className="text-md font-serif font-bold text-[#4795EA]">
+                  My Claim
+                </p>
+              </button>
+             
+
+            
 
               <div
                 onClick={handleOpen}
@@ -471,11 +503,13 @@ const User = () => {
             </div>
           )}
 
+
+
           <div className="w-[30%] h-full hidden md:block max-w-sm bg-white border  border-gray-200  shadow dark:bg-gray-800 dark:border-gray-700 relative ">
             {userModal && (
-              <div className="items-center w-full mr-auto ml-auto  max-w-7xl md:px-12 lg:px-24 absolute z-20 top-[50px] shadow-2xl  border-gray-700 border rounded-full">
+              <div className=" w-full   md:px-12 lg:px-20 absolute z-20 top-[90px] shadow-2xl   border-gray-700 border rounded-full">
                 <div className="grid grid-cols-1 relative">
-                  <div className="mt-4 mr-auto mb-4 ml-auto rounded-sm bg-green-400  text-sm max-w-[181px]">
+                  <div className="mt-4  mb-3 ml-auto rounded-sm bg-green-400  text-sm max-w-[181px]">
                     <input
                       placeholder="User image "
                       name="userImg"
@@ -486,7 +520,7 @@ const User = () => {
                   </div>
                   <div
                     onClick={userModalHide}
-                    className="text-center text-sm font-sans border border-gray-600 rounded-full bg-slate-800 shadow-2xl hover:bg-orange-950 cursor-pointer  font-semibold text-cyan-300 absolute bottom-[-10px] left-[40%]"
+                    className="text-center ml-[10px] w-full text-sm font-sans border border-gray-600 rounded-full bg-slate-800 shadow-2xl hover:bg-orange-950 cursor-pointer  font-semibold text-cyan-300 absolute bottom-[-10px]"
                   >
                     Upload
                   </div>
@@ -496,7 +530,7 @@ const User = () => {
             <div className="flex flex-col  items-center pt-8 relative ">
               <div className="">
                 <img
-                  onClick={userModalShow}
+                 onClick={()=>setUserModal(!userModal)}
                   // className="w-24 h-24 mb-3 rounded-full  shadow-2xl cursor-pointer "
                   className="flex-shrink-0 object-cover border-[2px] border-gray-600 object-center  flex w-16 h-16 mr-auto mb-1 ml-auto rounded-full   shadow-xl"
                   src={userImg ? userImg : "react.svg"}
@@ -633,7 +667,12 @@ const User = () => {
             </div>
           </div>
 
-          <div className="w-full flex  ">
+
+
+
+ 
+
+          <div className="w-full hidden md:flex md:block  ">
             <div className="w-[70%] relative p-4">
               <div className="w-[700px] mt-10  border border-gray-600 rounded-md p-[6px] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] ">
                 <h5 className=" text-lg font-bold tracking-tight text-gray-900 dark:text-white">
@@ -949,7 +988,17 @@ const User = () => {
               </div>
             </div>
           </div>
+          <div onClick={()=>setUserModal(false)} className="w-full md:hidden md:flex block  ">
+            fhfhfghg
+
+          </div>
+
+
+         
+  
         </div>
+
+
       </div>
     </>
   );
