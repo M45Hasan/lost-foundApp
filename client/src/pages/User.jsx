@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import Card from "../components/Card";
 import Cardx from "../components/Cardx";
+import MessReadModal from "../components/MessReadModal";
 
 const User = () => {
   let navigate = useNavigate();
@@ -148,6 +149,7 @@ const User = () => {
       .then((res) => {
         console.log(res);
         setData("");
+        setUrl([])
       })
       .catch((err) => {
         console.log(err);
@@ -182,7 +184,7 @@ const User = () => {
   };
   //#######################item img send #######
   let itemModalShow = () => {
-    setItemModal(true);
+    setItemModal(!itemModal);
   };
   let itemModalHide = async () => {
     await axios
@@ -312,19 +314,36 @@ const User = () => {
   let [mess, setMess] = useState(false);
   let [info, setInfo] = useState("");
   let [dot, setDot] = useState(false);
+  let [post, setPost] = useState(false);
+  let [dat, setDat] = useState("");
 
   const menuOpen = () => {
     setMenu(!menu);
+    setPost(false);
+    setOpen(false)
+    
   };
 
-  const sideOpen = () => {
-    setSide(!side);
+  const messOpen = () => {
+    setOpen(!open);
+    setPost(false)
+    setMess(false);
   };
   
+  const menuBar =()=>{
+    
+  }
 
-  const handleOpen = () => {
-    setOpen(!open);
-    setMess(false);
+  const handleRead = (e) => {
+    setMess(e._id);
+    setDat(e);
+    console.log(e);
+  };
+  const handlePost = () => {
+    setPost(!post);
+    setUrl([])
+    setOpen(false)
+  
   };
 
   useEffect(() => {
@@ -372,7 +391,7 @@ const User = () => {
         <div className=" flex justify-between relative ">
         
           {menu && (
-            <div  className=" p-2 w-[180px] h-[600px] block md:hidden  bg-white border  border-gray-200  shadow dark:bg-gray-800 dark:border-gray-700  ">
+            <div onClick={menuBar} className=" p-2 w-[180px] h-[600px] block md:hidden  bg-white border  border-gray-200  shadow dark:bg-gray-800 dark:border-gray-700  ">
 
             {userModal && (
              
@@ -436,32 +455,21 @@ const User = () => {
                 </a>
               </div>
               <button
-                onClick={sideOpen}
+                onClick={ handlePost}
                 className="w-[140px] px-1.5 py-[2px] mb-4 rounded-md border-[#2196F3]  border-2 hover:animate-pulse "
               >
                 <p className="text-md font-serif font-bold text-[#4795EA]">
                   Lost Item Post
                 </p>
               </button>
-              <button
-                onClick={sideOpen}
-                className="px-1.5 py-[2px] mb-4 rounded-md border-2  border-[#2196F3] hover:animate-pulse "
-              >
-                <p className="text-md font-serif font-bold text-[#4795EA]">
-                  My Claim
-                </p>
-              </button>
-             
-
-            
-
+           
               <div
-                onClick={handleOpen}
+                onClick={messOpen}
                 className="relative mt-4 cursor-pointer "
               >
                 {" "}
                 {info.length > 0 && (
-                  <span className=" absolute right-[5px] top-[4px] w-[40px] rounded-md h-[40px] opacity-75 bg-cyan-400 animate-ping scale-105 duration-300 ease-in"></span>
+                  <span className=" absolute left-[12px] top-[12px] w-[25px] rounded-md h-[25px] opacity-75 bg-cyan-400 animate-ping scale-105 duration-300 ease-in"></span>
                 )}
                 <img
                   className="w-[50px] h-[50px] hover:scale-105 duration-500"
@@ -474,7 +482,7 @@ const User = () => {
                 className="w-[140px] px-1.5 py-[2px] my-4 rounded-md border-[#2196F3] bg-gradient-to-br  bg-pink-900 border-2 hover:animate-pulse "
               >
                 <p className="text-md font-serif font-bold text-[#4795EA]">
-                  Donate
+                  Donate 
                 </p>
               </button>
 
@@ -667,10 +675,6 @@ const User = () => {
             </div>
           </div>
 
-
-
-
- 
 
           <div className="w-full hidden md:flex md:block  ">
             <div className="w-[70%] relative p-4">
@@ -988,8 +992,192 @@ const User = () => {
               </div>
             </div>
           </div>
-          <div onClick={()=>setUserModal(false)} className="w-full md:hidden md:flex block  ">
+          <div onClick={()=>setUserModal(false)} className="w-full md:hidden md:flex block relative ">
             fhfhfghg
+
+            { post && <div className="w-full z-20 top-[0] bg-gray-600 md:hidden md:flex block absolute">
+            
+            <div className=" shadow-gray-600   border-gray-500 rounded-md p-1 shadow-2xl  ">
+              <h5 className="mb-4 text-md font-medium text-gray-900 dark:text-cyan-500">
+                Lost Item Upload ami
+              </h5>
+              <form onSubmit={subMit} action="#">
+                <label className="block  text-sm font-medium text-gray-900 dark:text-gray-400">
+                  Category
+                </label>
+                <select
+                  onChange={getInput}
+                  name="category"
+                  className=" text-gray-900 text-sm  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                >
+                  <option selected>Choose a category</option>
+                  <option value="Mobile">Mobile</option>
+                  <option value="Electronic">Electronic</option>
+                  <option value="Document">Document</option>
+                  <option value="Human">Human</option>
+                </select>
+                <label className="block mt-[2px] text-sm font-medium text-gray-900 dark:text-gray-400">
+                  Sub-category
+                </label>
+                <input
+                  onChange={getInput}
+                  name="subcat"
+                  type="text"
+                  className=" text-gray-900 text-sm  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                />
+                <label className="block mt-[2px] text-sm font-medium text-gray-900 dark:text-gray-400">
+                  Product Details
+                </label>
+                <input
+                  onChange={getInput}
+                  name="detail"
+                  type="text"
+                  className=" text-gray-900 text-sm  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                />
+                <label className="block mt-[2px] text-sm font-medium text-gray-900 dark:text-gray-400">
+                  Location
+                </label>
+                <input
+                  onChange={getInput}
+                  name="location"
+                  type="text"
+                  className=" text-gray-900 text-sm  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                />
+                <div className=" mt-2 h-[240px]"></div>
+
+                <div>
+                  <button
+                    type="submit"
+                    className="w-full  text-white bg-cyan-500 hover:bg-cyan-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium  text-sm px-5 py-2.5 text-center dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-primary-800"
+                  >
+                    Submit
+                  </button>
+                </div>
+              </form>
+              <button
+                className={`bg-cyan-500 rounded-full hover:bg-purple-700 text-white absolute top-[296px] right-[2px] py-2 px-2  ${
+                  loading ? "cursor-not-allowed opacity-25" : ""
+                }`}
+                onClick={handleClick}
+                disabled={loading}
+              >
+                <img className="w-2 h-2 " src="ref.svg" />
+              </button>
+              <div className="mt-2 h-[240px top-[280px] absolute ">
+                <label className="block mt-[2px] text-sm font-medium text-gray-900 dark:text-gray-400">
+                  Upload Image
+                </label>
+                <svg
+                  onClick={itemModalShow}
+                  className="h-6 w-6 text-gray-400 mx-[25px] top-[70px] left-2 cursor-pointer "
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  {" "}
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />{" "}
+                  <circle cx="12" cy="13" r="4" />
+                </svg>
+
+                <div className="flex gap flex-wrap  mt-2 mx-2 h-[180px] ">
+                  {url && url.map((pic, i) => (
+                    <img
+                      key={i}
+                      className="min-[660px]:h-[85px]   min-[660px]:w-[120px] max-[450px]:w-[80px] max-[450px]:h-[88px] rounded-md max-[450px]:mx-[2px] mx-[2px]  "
+                      src={pic}
+                      alt={i}
+                    />
+                  ))}
+                </div>
+
+                {itemModal && (
+                  
+   <div className=" fixed z-20 top-[148px] max-[450px]:top-[415px]">
+   <div className="mb-[10px]   rounded-md border-b-0 bg-green-400  text-sm max-w-[140px] overflow-x-hidden">
+     <input
+     className="text-sm"
+       placeholder="User image "
+       name="userImg" 
+       type="file"
+       accept="image/*"
+       onChange={handleImageChangeItem}
+     />
+   </div>
+   <div
+     onClick={itemModalHide}
+     className="text-center w-full text-sm font-sans border border-gray-600 rounded-md bg-slate-800 shadow-2xl hover:bg-orange-950 cursor-pointer  font-semibold text-cyan-300 absolute bottom-[-10px] "
+   >
+     Upload
+   </div>
+ </div>
+
+                )}
+              </div>
+            </div>
+            
+            </div>}
+
+  
+     {open && (
+        <div className=" rounded-md z-20 flex  left-[0px] top-1 w-[100px]  items-center absolute   ">
+          <ul className="flex flex-col bg-gray-300 rounded-md  p-2">
+            {info &&
+              info.map((item, i) => (
+                <li
+                  key={i}
+                  onClick={() => handleRead(item)}
+                  className="border-gray-400 flex flex-row mb-2"
+                >
+                  <div className="select-none cursor-pointer bg-gray-200 rounded-md flex flex-1 items-center p-2  transition duration-500 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
+                    <div className="flex flex-col rounded-md w-10 h-10 bg-gray-300 justify-center items-center mr-4">
+                      new
+                    </div>
+                    <div className="flex-1  mr-10">
+                      <div className="font-bold text-sm">{item.category}</div>
+                      <div className="text-gray-600 font-bold text-[10px]">{item.subcat}</div>
+                    </div>
+                    <div className="text-gray-600 text-[8px]">
+                      {new Date().getFullYear() +
+                        "-" +
+                        (new Date().getMonth() + 1) +
+                        "-" +
+                        new Date().getDate()}
+                      <p>
+                        {" "}
+                        as{" "}
+                        {item.claimerEmail ===
+                        reduxReturnData.userStoreData.userInfo.email ? (
+                          <span>Claimer</span>
+                        ) : (
+                          <span>Finder</span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              ))}
+
+            <p
+              className=" cursor-pointer text-end text-sm font-bold font-sans p-[1px] text-red-600"
+              onClick={() => (setOpen(false), setMess(false))}
+            >
+              {info.length == 0 ? <p>No Message Close</p> : <p>Close</p>}
+            </p>
+          </ul>
+        </div>
+      )}
+
+
+{mess && (
+        <div className="w-full">
+          {" "}
+          <MessReadModal dat={dat} />{" "}
+        </div>
+      )}
+
 
           </div>
 
