@@ -9,6 +9,7 @@ import axios from "axios";
 import Card from "../components/Card";
 import Cardx from "../components/Cardx";
 import MessReadModal from "../components/MessReadModal";
+import Donate from "../components/Donate";
 
 const User = () => {
   let navigate = useNavigate();
@@ -328,12 +329,19 @@ const User = () => {
     setOpen(!open);
     setPost(false)
     setMess(false);
+    setDot(false)
+
   };
   
   const menuBar =()=>{
     
   }
-
+  const donateFn = () => {
+    setDot(!dot);
+    setPost(false)
+    setMess(false);
+    setOpen(false)
+  }
   const handleRead = (e) => {
     setMess(e._id);
     setDat(e);
@@ -343,6 +351,7 @@ const User = () => {
     setPost(!post);
     setUrl([])
     setOpen(false)
+    setDot(false);
   
   };
 
@@ -373,9 +382,7 @@ const User = () => {
   }, []);
   console.log(info);
 
-  const donateFn = () => {
-    setDot(!dot);
-  };
+ ;
 
   let logOut = () => {
     localStorage.removeItem("userInfo");
@@ -1171,14 +1178,15 @@ const User = () => {
       )}
 
 
-{mess && (
-        <div className="w-full">
+     {mess && (
+        <div className="w-full fixed translate-x-[-140px] sm:translate-x-[200px] sm:translate-y-[-18px]  translate-y-[100px] ">
           {" "}
-          <MessReadModal dat={dat} />{" "}
+          <MessReadModal  dat={dat} />{" "}
         </div>
       )}
 
 
+{dot && <div className=" "> <Donate/></div>}
           </div>
 
 
