@@ -8,6 +8,8 @@ function dbConnect() {
     .then(() => console.log("Mongo Connected!"))
     .catch((err) => {
       console.log("MongoErro:", err.code);
+
+      
     });
 }
 
