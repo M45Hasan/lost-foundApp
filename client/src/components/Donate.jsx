@@ -73,10 +73,10 @@ const Donate = () => {
   console.log(bank);
   //##########
   return (
-    <div className='lg:fixed  lg:p-6 p-2 z-30 w-full   h-screen bg-[url("dali.png")] lg:flex justify-center '>
+    <div className='lg:fixed  lg:p-6 p-2 z-30 w-full   h-full bg-[url("dali.png")] lg:flex justify-center '>
       <div className="w-[60px] h-[60px] absolute top-0 right-[31%] rounded-full bg-cyan-800 duration-300 animate-pulse opacity-20"></div>
-      <div className="lg:w-[400px] w-[300px] sm:w-[50%] lg:h-[460px]  bg-[#F7F7F9] shadow-2xl rounded-md">
-        <div className=" mb-2 h-[120px] border-b bg-[#faf9fb] shadow-2xl rounded-md p-4 flex justify-between">
+      <div className="lg:w-[400px] w-full  lg:h-[460px]  bg-[#F7F7F9] shadow-2xl rounded-md ">
+        <div className=" mb-2 h-[120px] border-b bg-[#faf9fb] shadow-2xl rounded-md p-4 flex justify-between ">
           <div className="w-[60%]">
             {" "}
             <p className="text-gray-800 font-serif text-[16px] font-bold  ">

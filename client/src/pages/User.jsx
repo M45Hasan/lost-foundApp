@@ -1186,7 +1186,7 @@ const User = () => {
       )}
 
 
-{dot && <div className=" "> <Donate/></div>}
+{dot && <div className="absolute right-[15px] "> <Donate/></div>}
           </div>
 
 
