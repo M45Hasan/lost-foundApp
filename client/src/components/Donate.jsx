@@ -66,7 +66,7 @@ const Donate = () => {
     });
     setModal(true);
     setTimeout(()=>{
-        navigate("/user")
+        history.go("/user")
 
     },3000)
   };
