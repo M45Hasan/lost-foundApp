@@ -30,7 +30,7 @@ const postController = async (req, res) => {
       userImg: photoURL,
     });
     mongo.save();
-  
+
     res.send(mongo);
   });
 };
@@ -40,7 +40,6 @@ const loginController = async (req, res) => {
 
   const how = await Userinfo.find({ email });
   if (how.length != 0) {
-   
     bcrypt.compare(pass, how[0].pass, function (err, result) {
       if (result == true) {
         res.json({
